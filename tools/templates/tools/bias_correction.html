@@ -1,0 +1,269 @@
+{% extends template_name %}
+
+
+{% load static %}
+{% block title %}Bias Correction - LIVWA{% endblock title %}
+
+{% block extra_head %}
+{# specific styles for method cards if not already in style.css #}
+<link rel="stylesheet" href="{% static 'css/bias.css' %}">
+<script src="{% static 'js/bias.js' %}"></script>
+{% endblock extra_head %}
+
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-1">Bias Correction Module</h1>
+  <p class="lead mb-4">Analyze and correct bias in remote sensing data using ground observations.</p>
+
+  {# Display Django Messages framework messages, including errors #}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {# Display specific error_message if passed directly (though messages framework is preferred) #}
+   {% if error_message %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error_message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+   {% endif %}
+
+
+  <!-- START === FORM INPUT FOR BIAS DATA COLLECTION AND CORRECTION -->
+  <form id="bias-correction-form" method="POST" action="{% url 'bias' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-4">
+      <div class="col-lg-5 col-xl-4">
+        <div class="dashboard-card">
+          <div class="card-header">
+            <i class="fas fa-upload me-2"></i> Data Input & Configuration
+          </div>
+          <div class="card-body">
+
+              <div class="file-upload-area mb-3">
+                  <div class="file-upload-title">Ground Observations</div>
+                  <div class="file-upload-text">Upload CSV or Excel file (.csv, .xlsx, .xls)</div>
+                  <label for="observations-file" class="btn btn-secondary btn-sm"><i class="fas fa-file-import me-1"></i> Select Observation File</label>
+                  {# *** ADDED name attribute *** #}
+                  <input type="file" id="observations-file" name="observations_file" accept=".csv, .xlsx, .xls" required>
+                  <div id="observations-file-name" class="file-name-display">No file selected</div>
+              </div>
+
+              <div class="file-upload-area mb-4">
+                  <div class="file-upload-title">Remote Sensing Data</div>
+                  <div class="file-upload-text">Upload corresponding CSV or Excel file</div>
+                  <label for="remote-sensing-file" class="btn btn-secondary btn-sm"><i class="fas fa-satellite-dish me-1"></i> Select Remote Sensing File</label>
+                  {# *** ADDED name attribute *** #}
+                  <input type="file" id="remote-sensing-file" name="remote_sensing_file" accept=".csv, .xlsx, .xls" required>
+                  <div id="remote-sensing-file-name" class="file-name-display">No file selected</div>
+              </div>
+
+              
+
+              <div class="mb-4">
+                  <label for="variable-select" class="form-label">Variable to Correct</label>
+                  {# *** ADDED name attribute *** #}
+                  <select id="variable-select" name="variable_select" class="form-select form-select-sm" required>
+                      <option value="precipitation">Precipitation</option>
+                      <option value="temperature">Temperature</option>
+                      <option value="humidity">Humidity</option>
+                      <option value="water_level" selected>Stream Flow</option>
+                      <option value="soil_moisture">Evaporation</option>
+                       {# Add more options as needed #}
+                  </select>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label d-block mb-3">Bias Correction Method</label>
+                {# *** ADDED Hidden input to store selected method *** #}
+                <input type="hidden" name="correction_method" id="selected-method-input" value="linear_scaling">
+
+                <div class="row g-3">
+                    <div class="col-6 col-md-6">
+                        <div class="method-card selected" data-method="linear_scaling">
+                            <div class="method-icon"><i class="fas fa-arrows-alt-v"></i></div>
+                            <div><div class="method-title">Linear Scaling</div><div class="method-description">Adjusts mean</div></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <div class="method-card" data-method="quantile_mapping">
+                             <div class="method-icon"><i class="fas fa-chart-bar"></i></div>
+                             <div><div class="method-title">Quantile Map</div><div class="method-description">Adjusts distribution</div></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <div class="method-card" data-method="delta_change">
+                            <div class="method-icon"><i class="fas fa-exchange-alt"></i></div>
+                             <div><div class="method-title">Delta Change</div><div class="method-description">Applies change factor</div></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <div class="method-card" data-method="empirical_quantile">
+                             <div class="method-icon"><i class="fas fa-project-diagram"></i></div>
+                             <div><div class="method-title">Empirical Quantile</div><div class="method-description">Non-parametric</div></div>
+                        </div>
+                    </div>
+                     <div class="col-6 col-md-6">
+                        <div class="method-card" data-method="variance_scaling">
+                            <div class="method-icon"><i class="fas fa-wave-square"></i></div>
+                            <div><div class="method-title">Variance Scaling</div><div class="method-description">Adjusts mean & variance</div></div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg w-100 mt-2">
+                  <i class="fas fa-cogs me-2"></i> Run Bias Correction
+              </button>
+          </div> {# End card-body #}
+        </div> {# End dashboard-card #}
+      </div> {# End Input Column #}
+
+      <!-- START === RESULTS SECTION BEFORE AND AFTER -->
+      <div class="col-lg-7 col-xl-8">
+        {# Placeholder/Results Area - Only show if context variables exist #}
+        {% if plot_base64 or metrics_before or metrics_after %}
+        <div class="row g-2">
+            <div class="card-header">
+                <i class="fas fa-chart-line me-2"></i> Bias Correction Results
+            </div>
+            <div class="card-body text-center"> {# Center chart if needed #}
+                <div class="chart-container mb-3" style="height: 350px; background-color: #fff;">
+                    {% if plot_base64 %}
+                        <img src="data:image/png;base64,{{ plot_base64 }}" alt="Bias Correction Chart" class="img-fluid" style="max-height: 350px;"/>
+                    {% else %}
+                        <div class="d-flex justify-content-center align-items-center h-100">
+                            <div>
+                                <i class="fas fa-chart-area fa-4x text-muted opacity-50"></i>
+                                <p class="ms-2 text-muted mt-2">Chart not available</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item"><span class="legend-color" style="background-color: #1d3557;"></span>Observed Data</div>
+                    <div class="legend-item"><span class="legend-color" style="background-color: #e63946;"></span>Original Remote Data</div>
+                    <div class="legend-item"><span class="legend-color" style="background-color: var(--accent);"></span>Bias Corrected Data</div>
+                </div>
+            </div> {# End card-body #}
+        </div> {# End results chart card #}
+        <!-- METRICS HERE HERE HERE -->
+        {% if metrics_before and metrics_after %}
+        <div class="row g-2" id="metrics-area">
+            <div class="card-header">
+                <i class="fas fa-calculator me-2"></i> Correction Metrics
+            </div>
+            <div class="card-body">
+                {# Use the theme's metrics-grid and metric-card styling #}
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">RMSE</div>
+                        <div class="metric-value">{{ metrics_before.RMSE|floatformat:2 }}</div>
+                        <div class="metric-subtitle">Before</div>
+                        <div class="metric-value metric-value-after">{{ metrics_after.RMSE|floatformat:2 }}</div>
+                        <div class="metric-subtitle">After</div>
+                        <div class="metric-trend trend-down">
+                            <!-- <i class="fas fa-arrow-down"></i> -->
+                            {{ metrics_before.rmse_difference|floatformat:2 }}
+
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">MAE</div>
+                        <div class="metric-value">{{ metrics_before.MAE|floatformat:2 }}</div>
+                        <div class="metric-subtitle">Before</div>
+                        <div class="metric-value metric-value-after">{{ metrics_after.MAE|floatformat:2 }}</div>
+                        <div class="metric-subtitle">After</div>
+                        <div class="metric-trend trend-down">
+                            <!-- <i class="fas fa-arrow-down"></i> -->
+                            {{ metrics_before.mae_difference|floatformat:2 }}
+                        </div>
+                    </div>
+                    <!-- <div class="metric-card">
+                        <div class="metric-title">Bias</div>
+                        <div class="metric-value">{{ metrics_before.Bias|floatformat:2 }}</div>
+                        <div class="metric-subtitle">Before</div>
+                        <div class="metric-value metric-value-after">{{ metrics_after.Bias|floatformat:2 }}</div>
+                        <div class="metric-subtitle">After</div>
+                        <div class="metric-trend trend-down">
+                            <i class="fas fa-arrow-down"></i>
+                            {{ metrics_before.bias_difference|floatformat:2 }}
+                        </div>
+                    </div> -->
+                    <div class="metric-card">
+                        <div class="metric-title">Correlation</div>
+                        <div class="metric-value">{{ metrics_before.Correlation|floatformat:2 }}</div>
+                        <div class="metric-subtitle">Before</div>
+                        <div class="metric-value metric-value-after">{{ metrics_after.Correlation|floatformat:2 }}</div>
+                        <div class="metric-subtitle">After</div>
+                        <div class="metric-trend trend-down">
+                            <!-- <i class="fas fa-arrow-down"></i> -->
+                            {{ metrics_before.correlation_difference|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Nash-Sutcliffe (NSE)</div>
+                        <div class="metric-value">{{ metrics_before.NSE|floatformat:2 }}</div>
+                        <div class="metric-subtitle">Before</div>
+                        <div class="metric-value metric-value-after">{{ metrics_after.NSE|floatformat:2 }}</div>
+                        <div class="metric-subtitle">After</div>
+                        <div class="metric-trend trend-down">
+                            <!-- <i class="fas fa-arrow-down"></i> -->
+                            {{ metrics_before.nse_difference|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Kling-Gupta (KGE)</div>
+                        <div class="metric-value">{{ metrics_before.KGE|floatformat:2 }}</div>
+                        <div class="metric-subtitle">Before</div>
+                        <div class="metric-value metric-value-after">{{ metrics_after.KGE|floatformat:2 }}</div>
+                        <div class="metric-subtitle">After</div>
+                        <div class="metric-trend trend-down">
+                            <!-- <i class="fas fa-arrow-down"></i> -->
+                            {{ metrics_before.kge_difference|floatformat:2 }}
+                        </div>
+                    </div>
+                </div> {# End metrics-grid #}
+            </div> {# End card-body #}
+        </div> {# End metrics card #}
+        {% endif %} {# End check for metrics #}
+        <!-- TO HERE HERE METRICS -->
+        <div class="row g-2" id="export-area">
+            <div class="card-header">
+                    <i class="fas fa-download me-2"></i> Export Results
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    {# TODO: Add URLs or JS functions for these buttons #}
+                    <button type="button" class="btn btn-success"><i class="fas fa-file-csv me-1"></i> Download Corrected Data (CSV)</button>
+                    <button type="button" class="btn btn-danger"><i class="fas fa-file-pdf me-1"></i> Export Report (PDF)</button>
+                    <button type="button" class="btn btn-info text-white"><i class="fas fa-save me-1"></i> Save Configuration</button>
+                </div>
+            </div> {# End card-body #}
+        </div> {# End export card #}
+        {% else %}
+        <div class="row g-2">
+            <div class="card-header">
+                <i class="fas fa-info-circle me-2"></i> Results Area
+            </div>
+            <div class="card-body text-center text-muted">
+                <p>Results chart, metrics, and export options will appear here after submitting the data and configuration.</p>
+                <i class="fas fa-tasks fa-3x mt-3"></i>
+            </div>
+        </div>
+        {% endif %} {# End check for results #}
+      </div> {# End Results Column #}
+      <!-- END === RESULTS SECTION BEFORE AND AFTER -->
+    </div> {# End Main Row #}
+  </form> {# End Form #}
+  <!-- END === FORM INPUT FOR BIAS DATA COLLECTION AND CORRECTION -->
+   
+</div> {# End container #}
+{% endblock content %}

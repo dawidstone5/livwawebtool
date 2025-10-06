@@ -1,0 +1,408 @@
+/* static/css/style.css */
+
+/* --- Variables and Base Styles (from file1) --- */
+:root {
+    --primary: #2c3e50; /* Dark Blue-Gray */
+    --secondary: #3498db; /* Bright Blue */
+    --accent: #1abc9c; /* Teal/Green */
+    --light: #ecf0f1; /* Light Gray */
+    --dark: #34495e; /* Darker Blue-Gray */
+    --white: #ffffff;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --success-bg: #e3f9e5;
+    --success-text: #1b7740;
+    --warning-bg: #fff8e6;
+    --warning-text: #8a6d3b;
+    --danger-bg: #fde8e8;
+    --danger-text: #a94442;
+  }
+  
+  body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom right, var(--gray-200), var(--light));
+    min-height: 100vh;
+    color: var(--dark);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  header {
+    margin: auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    object-fit: fill;
+  }
+
+
+  main {
+    flex: 1; /* Ensure main content pushes footer down */
+  }
+  
+  /* --- Navbar Styles (from file1) --- */
+  .navbar {
+    background-color: var(--primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-brand img {
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .navbar-brand span {
+      font-weight: 600;
+  }
+  
+  .nav-link {
+    color: var(--white) !important;
+    font-weight: 500;
+    position: relative;
+    transition: all 0.3s ease;
+    padding-left: 0.8rem !important;
+    padding-right: 0.8rem !important;
+  }
+  
+  .nav-link .fa-fw { /* Fixed width icons */
+      width: 1.25em;
+  }
+  
+  .nav-link.active::after,
+  .nav-item.show .nav-link::after { /* Add underline for active/open dropdown */
+    content: '';
+    position: absolute;
+    width: calc(100% - 1.6rem); /* Adjust width based on padding */
+    height: 3px;
+    background-color: var(--accent);
+    bottom: 0;
+    left: 0.8rem; /* Match padding */
+    transition: all 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    color: var(--accent) !important;
+  }
+  
+  .dropdown-menu {
+      border-radius: 0.5rem;
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .dropdown-item {
+      padding: 0.5rem 1rem;
+  }
+  
+  .dropdown-item:hover {
+      background-color: var(--light);
+      color: var(--primary);
+  }
+  
+  /* --- Card Styles (adapted from file1 for general use) --- */
+  .dashboard-card {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .card-header {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 600;
+    padding: 1rem 1.25rem; /* Consistent padding */
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle separator */
+  }
+  
+  .card-header .fas, .card-header .far { /* Icons in header */
+      margin-right: 0.5rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem; /* Consistent padding */
+    flex: 1; /* Allow card body to grow */
+  }
+  
+  .card-title {
+      color: var(--primary);
+      margin-bottom: 1rem;
+  }
+  
+  /* Icon wrapper (from file1) */
+  .icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background-color: var(--light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem; /* 20px */
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .icon-wrapper i {
+    font-size: 24px;
+    color: var(--secondary);
+  }
+  
+  /* --- Button Styles (from file1) --- */
+  .btn-primary {
+    background-color: var(--secondary);
+    border-color: var(--secondary); /* Ensure border matches */
+    border-radius: 5px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+    color: var(--white);
+  }
+  
+  .btn-primary:hover, .btn-primary:focus {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    color: var(--white);
+  }
+  
+  .btn-primary .fas {
+      margin-left: 0.5rem;
+  }
+  
+  /* --- Quick Stats (from file1) --- */
+  .quick-stats {
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    padding: 1.25rem; /* 20px */
+    margin-bottom: 2rem; /* 30px */
+  }
+  
+  .stats-item {
+    text-align: center;
+    padding: 1rem 0.6rem; /* 15px 10px */
+  }
+  
+  .stats-value {
+    font-size: 2rem; /* Slightly larger */
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 0.3rem; /* 5px */
+  }
+  
+  .stats-label {
+    font-size: 0.9rem; /* 14px */
+    color: var(--dark);
+  }
+  
+  /* --- Breadcrumb Styles (from file1) --- */
+  .breadcrumb {
+    background-color: transparent;
+    padding: 1rem 0;
+    margin-bottom: 0; /* Remove default bootstrap margin */
+  }
+  
+  .breadcrumb-item a {
+      color: var(--secondary);
+      text-decoration: none;
+  }
+  .breadcrumb-item a:hover {
+      color: var(--accent);
+  }
+  .breadcrumb-item.active {
+      color: var(--gray-600);
+  }
+  
+  /* --- Styles adapted from file2 --- */
+  
+  /* Component Title (General purpose heading within cards/sections) */
+  .component-title {
+    font-size: 1.1rem; /* 16px-ish */
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 0;
+    margin-bottom: 1rem; /* 15px */
+    padding-bottom: 0.6rem; /* 10px */
+    border-bottom: 1px solid var(--gray-200);
+  }
+  
+  /* Chart Container Placeholder */
+  .chart-container {
+    height: 300px;
+    width: 100%;
+    background-color: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-600);
+    border-radius: 6px;
+    border: 1px dashed var(--gray-200);
+  }
+  
+  /* Status Badges */
+  .status {
+    display: inline-block;
+    padding: 0.3rem 0.6rem; /* 4px 8px */
+    border-radius: 4px;
+    font-size: 0.8rem; /* 12px */
+    font-weight: 600;
+    line-height: 1;
+  }
+  
+  .status-good {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+  }
+  
+  .status-warning {
+    background-color: var(--warning-bg);
+    color: var(--warning-text);
+  }
+  
+  .status-error {
+    background-color: var(--danger-bg);
+    color: var(--danger-text);
+  }
+  
+
+  
+  /* Metrics Grid & Cards (for smaller stats like in file2) */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid */
+    gap: 1rem; /* 15px */
+  }
+  
+  .metric-card {
+    background-color: var(--gray-100);
+    padding: 1rem; /* 15px */
+    border-radius: 6px;
+    border: 1px solid var(--gray-200);
+  }
+  
+  .metric-title {
+    font-size: 0.85rem; /* 14px */
+    margin-bottom: 0.3rem; /* 5px */
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+  
+  .metric-value {
+    font-size: 1.5rem; /* 24px */
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .metric-card .status { /* Adjust status size within metric card */
+      font-size: 0.9rem;
+      padding: 0.4rem 0.7rem;
+  }
+  
+  
+
+  /* Table Styles (Leveraging Bootstrap, adding theme colors) */
+  .table {
+      border-color: var(--gray-200);
+  }
+  
+  .table th {
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+    font-weight: 600;
+    border-color: var(--gray-200);
+    border-bottom-width: 2px;
+  }
+  
+  .table td {
+      border-color: var(--gray-200);
+      vertical-align: middle;
+  }
+  
+  .table-hover tbody tr:hover {
+    background-color: var(--gray-100);
+    color: var(--dark);
+  }
+  
+  /* Form Styles (Leveraging Bootstrap) */
+  .form-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+  }
+  
+  .form-control, .form-select {
+      border-radius: 5px;
+      border-color: var(--gray-200);
+  }
+  .form-control:focus, .form-select:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25); /* var(--secondary) with alpha */
+  }
+  
+
+
+  /* --- Footer Styles (from file1) --- */
+  footer {
+    background-color: var(--primary);
+    color: rgba(255, 255, 255, 0.8); /* Slightly lighter text */
+    padding: 2rem 0 1rem 0; /* More padding top/bottom */
+    margin-top: 3rem; /* 50px-ish */
+  }
+  
+  footer h5 {
+      color: var(--white);
+      margin-bottom: 1rem;
+      font-weight: 600;
+  }
+  
+  footer ul {
+      padding-left: 0;
+  }
+  
+  footer ul li {
+      margin-bottom: 0.5rem;
+  }
+  
+  footer a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: color 0.3s ease;
+  }
+  
+  footer a:hover {
+      color: var(--accent);
+      text-decoration: none;
+  }
+  
+  footer .social-icons a {
+      font-size: 1.5rem; /* lg */
+      margin-right: 1rem;
+      display: inline-block; /* Prevent jump on hover */
+  }
+  
+  footer .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1rem;
+      margin-top: 1.5rem;
+      color: rgba(255, 255, 255, 0.6);
+  }
+  
+  footer .footer-bottom small {
+      font-size: 0.85rem;
+  }

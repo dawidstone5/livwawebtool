@@ -1,0 +1,174 @@
+{% extends template_name %}
+
+
+{% load static %}
+
+{% block title %}Dashboard - LIVWA{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="quick-stats">
+        <div class="row g-3"> {# Use g-3 for consistent gap #}
+            <div class="col-md-3 col-6">
+                <div class="stats-item">
+                    <div class="stats-value">12</div>
+                    <div class="stats-label">Recent Analyses</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-item">
+                    <div class="stats-value">85%</div>
+                    <div class="stats-label">Average Correction</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-item">
+                    <div class="stats-value">4</div>
+                    <div class="stats-label">Saved Reports</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-item">
+                    <div class="stats-value">2.3K</div>
+                    <div class="stats-label">Data Points</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mb-4">Water Analysis Tools</h2>
+
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-sync-alt"></i>
+                    Bias Correction
+                </div>
+                <div class="card-body text-center"> {# text-center for body content #}
+                    <div class="icon-wrapper">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h5 class="card-title">Data Alignment</h5>
+                    <p class="card-text">Adjust remotely sensed data to align with observed values using advanced
+                        correction algorithms.</p>
+                    <div class="mt-4">
+                        <a href="{% url 'bias' %}" class="btn btn-primary">Use Tool <i
+                                class="fas fa-arrow-right"></i></a> {# Use <a> for links #}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-chart-line"></i>
+                    Water Level Prediction
+                </div>
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <h5 class="card-title">ML Forecasting</h5>
+                    <p class="card-text">Predict water level changes using machine learning trained on historical
+                        hydrological data.</p>
+                    <div class="mt-4">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'levels' %}" class="btn btn-primary">Use Tool <i
+                                class="fas fa-arrow-right"></i></a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">Use Tool <i
+                                class="fas fa-arrow-right"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-cloud-sun"></i>
+                    Climate Analysis
+                </div>
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-temperature-high"></i>
+                    </div>
+                    <h5 class="card-title">Climate Impact</h5>
+                    <p class="card-text">Analyze trends and impacts of climate change on critical water resources with
+                        specialized tools.</p>
+                    <div class="mt-4">
+                        <a href="#" class="btn btn-primary">Use Tool <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-file-alt"></i>
+                    Report Generation
+                </div>
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h5 class="card-title">Automated Reports</h5>
+                    <p class="card-text">Automatically generate detailed reports from your analysis results with
+                        customizable templates.</p>
+                    <div class="mt-4">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'reports'%}" class="btn btn-primary">Use Tool <i
+                                class="fas fa-arrow-right"></i></a>
+                        {% else %}
+                        <a href="{% url 'login'%}" class="btn btn-primary">Use Tool <i
+                                class="fas fa-arrow-right"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-question-circle"></i>
+                    User Support
+                </div>
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h5 class="card-title">Help Resources</h5>
+                    <p class="card-text">Access tutorials, documentation, and get help from our support team.</p>
+                    <div class="mt-4">
+                        <a href="{% url 'support' %}" class="btn btn-primary">Get Support <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-history"></i>
+                    Recent Activity
+                </div>
+                <div class="card-body text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h5 class="card-title">Your Analytics</h5>
+                    <p class="card-text">View and resume your recent analysis sessions and access saved results.</p>
+                    <div class="mt-4">
+                        <a href="#" class="btn btn-primary">View History <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> {% endblock content %}

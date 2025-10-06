@@ -1,0 +1,15 @@
+{% extends template_name %}
+
+
+{% load static %}
+
+{% block title %}Activate Your Account{% endblock title %}
+
+{% block content %}
+
+<h2>Activate Your Account</h2>
+<p>Hi {{ user.username }},</p>
+<p>Please click on the link to activate your account:</p>
+<a href="http://{{ domain }}{% url 'activate' uid=uid token=token %}">Activate</a>
+
+{% endblock content %}

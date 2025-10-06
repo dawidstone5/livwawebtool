@@ -1,0 +1,229 @@
+{% extends template_name %}
+
+
+{% load static %}
+
+{% block title %}Dashboard - LIVWA{% endblock title %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock extra_head %}
+
+
+{% block header %}
+<div class="lake-vic">
+    <img src="{% static 'images/lakeVic0.png' %}" alt="Lake-Victoria">
+    <div class="overlay">
+        <div class="title">Lake Victoria Advanced Water Management</div>
+        <div class="slogan">Empowering Action Through Accurate Water Data</div>
+    </div>
+</div>
+{% endblock header %}
+
+
+{% block content %}
+<div class="container">
+
+    <!-- Hero Section -->
+    <!-- <section class="hero my-5 text-center">
+    <h1 class="display-4 font-weight-bold">Lake Victoria Advanced Water Management</h1>
+    <p class="lead">Empowering Action Through Accurate Water Data</p>
+  </section> -->
+
+    <!-- About Section -->
+    <section class="about my-5 about-bg">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Background</h3>
+                <p>
+                    Lake Victoria faces severe water level fluctuations driven by climate change and suboptimal
+                    regulation via the Agreed Curve. These fluctuations threaten dam safety, ecosystems, and
+                    livelihoods. There is a lack of accurate, real-time forecasting tools to support dam operations.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h3>Goals</h3>
+                <ul>
+                    <li>Develop advanced hydrological and climate models</li>
+                    <li>Implement optimization algorithms for real-time water resource scheduling</li>
+                    <li>Create a decision support system for dam operators</li>
+                    <li>Build capacity in data-driven modeling among local experts</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="my-5">
+        <h2 class="mb-4 text-center">Our Tools</h2>
+        <div class="position-relative">
+            <button class="tools-arrow left-arrow btn btn-light position-absolute top-50 start-0 translate-middle-y"
+                style="z-index:2;" aria-label="Scroll left">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="tools-scroll d-flex flex-nowrap overflow-hidden pb-3" style="scroll-behavior: smooth;">
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-sync-alt fa-2x text-primary mb-2"></i>
+                            <h5 class="card-title">Bias Correction</h5>
+                            <p class="card-text">Adjust remotely sensed data to align with observed values using
+                                advanced correction algorithms.</p>
+                            <a href="{% url 'bias' %}" class="btn btn-outline-primary btn-sm">Use Tool</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                            <h5 class="card-title">Water Level Prediction</h5>
+                            <p class="card-text">Predict water level changes using machine learning trained on
+                                historical hydrological data.</p>
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'levels' %}" class="btn btn-outline-success btn-sm">Use Tool</a>
+                            {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">Use Tool</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-cloud-sun fa-2x text-info mb-2"></i>
+                            <h5 class="card-title">Climate Analysis</h5>
+                            <p class="card-text">Analyze trends and impacts of climate change on critical water
+                                resources with specialized tools.</p>
+                            <a href="#" class="btn btn-outline-info btn-sm">Use Tool</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-alt fa-2x text-warning mb-2"></i>
+                            <h5 class="card-title">Report Generation</h5>
+                            <p class="card-text">Automatically generate detailed reports from your analysis results with
+                                customizable templates.</p>
+                            <a href="{% url 'reports' %}" class="btn btn-outline-warning btn-sm">Use Tool</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-question-circle fa-2x text-secondary mb-2"></i>
+                            <h5 class="card-title">User Support</h5>
+                            <p class="card-text">Access tutorials, documentation, and get help from our support team.
+                            </p>
+                            <a href="{% url 'support' %}" class="btn btn-outline-secondary btn-sm">Get Support</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-history fa-2x text-dark mb-2"></i>
+                            <h5 class="card-title">Recent Activity</h5>
+                            <p class="card-text">View and resume your recent analysis sessions and access saved results.
+                            </p>
+                            <a href="#" class="btn btn-outline-dark btn-sm">View History</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                            <h5 class="card-title">Forecast Dashboard</h5>
+                            <p class="card-text">Visualize and analyze water level forecasts and trends.</p>
+                            <a href="#" class="btn btn-outline-primary btn-sm">View Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-sliders-h fa-2x text-success mb-2"></i>
+                            <h5 class="card-title">Optimization Suite</h5>
+                            <p class="card-text">Optimize dam operations with real-time scheduling tools.</p>
+                            <a href="#" class="btn btn-outline-success btn-sm">Try Optimization</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 flex-shrink-0" style="min-width: 300px;">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-database fa-2x text-info mb-2"></i>
+                            <h5 class="card-title">Data Portal</h5>
+                            <p class="card-text">Access historical and real-time hydrological data.</p>
+                            <a href="#" class="btn btn-outline-info btn-sm">Browse Data</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <button class="tools-arrow right-arrow btn btn-light position-absolute top-50 end-0 translate-middle-y"
+                style="z-index:2;" aria-label="Scroll right">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </section>
+
+
+    <!-- Sponsors & Partners Section -->
+    <section id="sponsors" class="my-5">
+        <h2 class="mb-4 text-center">Our Sponsors & Partners</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-3 mb-3">
+                <a href="https://www.uegcl.com/" target="_blank" class="text-decoration-none">
+                    <div class="card h-100 border-0">
+                        <div class="card-body d-flex align-items-center justify-content-center" style="height: 140px;">
+                            <img src="{% static 'images/uegcl.png' %}" alt="UEGCL" class="img-fluid"
+                                style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                        </div>
+                        <div class="text-center">
+                            <h6 class="mt-2">UEGCL</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="https://www.mak.ac.ug/" target="_blank" class="text-decoration-none">
+                    <div class="card h-100 border-0">
+                        <div class="card-body d-flex align-items-center justify-content-center" style="height: 140px;">
+                            <img src="{% static 'images/muk.png' %}" alt="Makerere University" class="img-fluid"
+                                style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                        </div>
+                        <div class="text-center">
+                            <h6 class="mt-2">Makerere University</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <!-- Add more partners as needed -->
+        </div>
+        <div class="text-center mt-3">
+            <a href="#" class="btn btn-lg btn-primary mt-3">Become a Sponsor</a>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta text-center my-5">
+        <h3>Ready to transform water management?</h3>
+        <a href="#" class="btn btn-lg btn-primary mt-3">Join the Community</a>
+    </section>
+
+</div>
+{% endblock content %}

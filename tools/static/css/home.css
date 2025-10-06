@@ -1,0 +1,149 @@
+/* About section */
+.about-bg {
+  background: #84c8e5;
+  border-radius: 1rem;
+  padding: 2.5em 1.5em; /* changed px to em */
+}
+
+/* Centering container */
+.quick-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+/* Responsive image settings */
+.lake-vic img {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    vertical-align: middle;
+    object-fit: contain;
+}
+
+/* Overlay covering full area */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Title text positioning and responsiveness */
+.title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: clamp(1em, 3vw, 2.5em); /* was clamp(16px, 3vw, 40px) */
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Slogan text positioning and responsiveness */
+.slogan {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: clamp(0.75em, 1.2vw, 1.5em); /* was clamp(12px, 1.2vw, 24px) */
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Media Queries for additional responsiveness */
+@media (max-width: 600px) {
+    .title {
+        font-size: clamp(1em, 4vw, 2.25em); /* was clamp(14px, 4vw, 36px) */
+    }
+    .slogan {
+        font-size: clamp(0.7em, 2vw, 1.25em); /* was clamp(10px, 2vw, 20px) */
+    }
+}
+
+/* Styling for the scrollable tools section */
+.tools-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.tools-scroll::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+.tools-scroll {
+  scrollbar-color: #e0e0e0 #f8f9fa;
+  scrollbar-width: thin;
+}
+
+/* Modern floating card style for tools */
+.tools-scroll {
+  gap: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+.tools-scroll::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari */
+}
+.tools-scroll .card {
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15), 0 1.5px 6px 0 rgba(60,60,60,0.08);
+  border-radius: 1.25rem;
+  border: none;
+  transition: transform 0.25s cubic-bezier(.4,2,.6,1), box-shadow 0.25s;
+  background: rgba(255,255,255,0.95);
+  will-change: transform;
+  min-width: 320px;
+  max-width: 320px;
+  margin-right: 0; /* gap handles spacing */
+  font-size: 1em; /* base font size for card content */
+}
+.tools-scroll .card-title {
+  font-size: 1.25em;
+  font-weight: bold;
+}
+.tools-scroll .card-text {
+  font-size: 1em;
+}
+.tools-scroll .btn-sm {
+  font-size: 0.95em;
+}
+.tools-scroll .card:hover {
+  transform: translateY(-10px) scale(1.04);
+  box-shadow: 0 16px 40px 0 rgba(31, 38, 135, 0.22), 0 3px 12px 0 rgba(60,60,60,0.12);
+  background: rgba(255,255,255,1);
+  z-index: 2;
+}
+.tools-scroll .card-body i {
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08));
+}
+.tools-arrow {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+  font-size: 1.2em;
+}
+.tools-arrow:hover {
+  opacity: 1;
+  background: #e9ecef;
+}
+@media (max-width: 600px) {
+  .tools-scroll .card {
+    min-width: 85vw;
+    max-width: 85vw;
+  }
+  .tools-scroll {
+    gap: 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}

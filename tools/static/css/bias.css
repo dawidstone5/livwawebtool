@@ -1,0 +1,140 @@
+.method-card {
+    border: 2px solid var(--gray-200);
+    border-radius: var(--border-radius, 8px); /* Use theme variable or fallback */
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--white);
+    height: 100%; /* Ensure cards in a row have same height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes description down */
+}
+
+.method-card:hover {
+    border-color: var(--secondary);
+    box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.1);
+    transform: translateY(-0.2em);
+}
+
+.method-card.selected {
+    border-color: var(--primary);
+    background-color: rgba(44, 62, 80, 0.05); /* --primary with alpha */
+    box-shadow: 0 0 0 0.125em var(--primary);
+}
+
+.method-icon {
+    font-size: 1.8em; /* Slightly larger icon */
+    margin-bottom: 0.75em;
+    color: var(--primary);
+}
+
+.method-title {
+    font-weight: 600;
+    margin-bottom: 0.5em;
+    color: var(--dark);
+    font-size: 1em;
+}
+
+.method-description {
+    font-size: 0.9em;
+    color: var(--gray-600);
+    flex-grow: 1; /* Allows description to take available space */
+    margin-bottom: 0.5em;
+}
+
+/* Style for file upload area */
+.file-upload-area {
+    border: 2px dashed var(--gray-200);
+    padding: 1.5em;
+    text-align: center;
+    border-radius: var(--border-radius, 8px);
+    margin-bottom: 1em;
+    background-color: var(--gray-100);
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    border-color: var(--secondary);
+    background-color: var(--white);
+}
+
+.file-upload-title {
+    font-weight: 600;
+    margin-bottom: 0.25em;
+    color: var(--primary);
+}
+
+.file-upload-text {
+    font-size: 0.95em;
+    color: var(--gray-600);
+    margin-bottom: 0.75em;
+}
+
+/* Hide actual file input */
+.file-upload-area input[type="file"] {
+    display: none;
+}
+
+.file-name-display {
+    margin-top: 0.75em;
+    font-size: 0.9em;
+    color: var(--gray-700);
+    font-style: italic;
+}
+
+/* Metrics card adjustments */
+.metric-card .metric-value {
+    font-size: 1.2em; /* Slightly smaller */
+}
+
+.metric-card .metric-subtitle {
+    font-size: 0.85em; /* Smaller */
+    color: var(--gray-600);
+    margin-bottom: 0.5em; /* Add space before next value */
+}
+
+.metric-card .metric-trend {
+    font-size: 0.9em;
+    margin-top: 0.25em;
+    font-weight: 600;
+}
+
+.metric-trend.trend-up {
+    color: var(--success-text); /* Use text color from theme */
+}
+
+.metric-trend.trend-down {
+    color: var(--danger-text); /* Use text color from theme */
+}
+
+.metric-card .metric-value-after { /* Specific class for 'after' value */
+    color: var(--success-text); /* Green for improvement */
+    font-weight: 700;
+}
+
+/* Legend styles */
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    justify-content: center;
+    padding: 0.75em 0 0 0; /* Padding above */
+    gap: 1em; /* Space between items */
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    color: var(--gray-700);
+}
+
+.legend-color {
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 0.25em; /* Square or circle */
+    margin-right: 0.4em;
+    display: inline-block;
+}
+

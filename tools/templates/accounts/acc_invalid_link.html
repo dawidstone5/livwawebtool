@@ -1,0 +1,14 @@
+{% extends template_name %}
+
+
+{% load static %}
+
+{% block title %}Invalid Link{% endblock title %}
+
+{% block content %}
+
+<h2>Invalid Link</h2>
+<p>The activation link is invalid!</p>
+<a href="{% url 'signup' %}">Signup</a>
+
+{% endblock content %}

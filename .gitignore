@@ -1,3 +1,5 @@
+ITS ALL local
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -67,14 +69,11 @@ instance/
 
 # Scrapy stuff:
 .scrapy
-
 # Sphinx documentation
 docs/_build/
-
 # PyBuilder
 .pybuilder/
 target/
-
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -123,6 +122,27 @@ ipython_config.py
 #   Pixi creates a virtual environment in the .pixi directory, just like venv module creates one
 #   in the .venv directory. It is recommended not to include this directory in version control.
 .pixi
+
+
+# 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 OH SPIRIT OF NALUBAALE 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28
+/livenv
+activate.*
+
+data
+*.xlsx
+*.xls
+db.sqlite3
+*.sock
+
+/models
+*.pkl
+
+/static
+/staticfiles
+
+/livwawebtool
+# 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 PROTECT US 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28
+
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
 __pypackages__/

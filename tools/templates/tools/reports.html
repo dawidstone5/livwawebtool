@@ -1,0 +1,54 @@
+{% extends template_name %}
+
+
+{% load static %}
+
+{% block title %}Generate Reports - LIVWA{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-4">Generate Analysis Reports</h1>
+  <p class="lead">Select the analyses to include in your report and choose the export format.</p>
+
+  <form method="POST" action="{% url 'reports' %}">
+    {% csrf_token %}
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="dashboard-card">
+          <div class="card-header"><i class="fas fa-list-alt"></i> Select Content</div>
+          <div class="card-body">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="biasCorrection" name="bias_correction">
+              <label class="form-check-label" for="biasCorrection">Include Bias Correction Analysis</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="waterLevels" name="water_levels">
+              <label class="form-check-label" for="waterLevels">Include Water Levels Prediction</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="dashboard-card">
+          <div class="card-header"><i class="fas fa-file-export"></i> Export Options</div>
+          <div class="card-body">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="exportPDF" name="export_format" value="pdf" checked>
+              <label class="form-check-label" for="exportPDF">Export as PDF</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="exportWord" name="export_format" value="word">
+              <label class="form-check-label" for="exportWord">Export as Word Document</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary btn-lg w-100"><i class="fas fa-download me-2"></i> Generate Report</button>
+    </div>
+  </form>
+</div>
+{% endblock content %}

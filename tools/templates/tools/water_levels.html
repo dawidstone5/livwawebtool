@@ -1,0 +1,197 @@
+{% extends template_name %}
+
+
+{% load static %}
+
+{% block title %}Water Level Prediction - LIVWA{% endblock title %}
+
+{% block extra_head %}
+{# Add any other page-specific head elements here if needed #}
+<!-- <style>
+  .chart-container img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd; /* Optional: adds a border around the chart image */
+  }
+  .chart-container {
+    min-height: 300px; /* Ensure container has some height even if image is missing initially */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa; /* Light background for the chart area */
+  }
+</style> -->
+{% endblock extra_head %}
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-4">Water Level Prediction System</h1>
+
+  {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+      {{ error_message }}
+    </div>
+  {% endif %}
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-4 col-md-6">
+      <div class="dashboard-card">
+        <div class="card-header"><i class="fas fa-sync-alt"></i> Last Update</div>
+        <div class="card-body">
+          <div class="metrics-grid">
+              <div class="metric-card">
+                  <div class="metric-title">Date</div>
+                  <div class="metric-value">{% now "d M Y" %}</div>
+              </div>
+              <div class="metric-card">
+                  <div class="metric-title">Time</div>
+                  <div class="metric-value">{% now "H:i T" %}</div>
+              </div>
+              <div class="metric-card">
+                  <div class="metric-title">Status</div>
+                  <div class="status status-good">Online</div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+      <div class="dashboard-card">
+          <div class="card-header"><i class="fas fa-check-circle"></i> Prediction Confidence</div>
+          <div class="card-body">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Current</div>
+                    <div class="metric-value">87%</div> {# Example static value #}
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">7-Day Avg</div>
+                    <div class="metric-value">85%</div> {# Example static value #}
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Trend</div>
+                    <div class="status status-good">Stable</div> {# Example static value #}
+                </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    {% if metrics_trained %} {# This variable is not in the provided view context, assumed to be handled elsewhere #}
+    <div class="col-lg-4 col-md-12">
+        <div class="dashboard-card">
+            <div class="card-header"><i class="fas fa-crosshairs"></i> Prediction Accuracy (Trained Model)</div>
+            <div class="card-body">
+              <div class="metrics-grid">
+                  <div class="metric-card">
+                      <div class="metric-title">RMSE</div>
+                      <div class="metric-value">{{ metrics_trained.rmse|floatformat:2 }}m</div>
+                  </div>
+                  <div class="metric-card">
+                      <div class="metric-title">MAE</div>
+                      <div class="metric-value">{{ metrics_trained.mae|floatformat:2 }}m</div>
+                  </div>
+                  <div class="metric-card">
+                      <div class="metric-title">R²</div>
+                      <div class="metric-value">{{ metrics_trained.r2|floatformat:2 }}</div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-header"><i class="fas fa-chart-area"></i> Prediction </div>
+            <div class="card-body">
+                <div class="chart-container text-center">
+                    {% if plot_base64 %}
+                        <img src="data:image/png;base64,{{ plot_base64 }}" alt="{{ selected_variable_name }} Prediction Chart" class="img-fluid" style="max-height: 350px;">
+                    {% else %}
+                        <div class="d-flex justify-content-center align-items-center h-100">
+                            <div>
+                                <i class="fas fa-chart-area fa-4x text-muted opacity-50"></i>
+                                <p class="ms-2 text-muted mt-2">Chart not available, Please submit the form to generate a plot.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="dashboard-card">
+            <div class="card-header"><i class="fas fa-sliders-h"></i> Prediction Controls</div>
+            <div class="card-body">
+                <form id="predictionControlForm" method="POST" action="{% url 'levels' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="reference-start" class="form-label">Enter Start Date</label>
+                        <input type="date" id="reference-start" name="reference_start" class="form-control form-control-sm" value="{{ reference_start_date|default:''|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reference-end" class="form-label">Enter End Date</label>
+                        <input type="date" id="reference-end" name="reference_end" class="form-control form-control-sm" value="{{ reference_end_date|default:''|date:'Y-m-d' }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Apply Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- {% if metrics_predicted %} {# This variable is not in the provided view context #}
+    <div class="col-lg-3 col-md-6">
+        <div class="dashboard-card">
+            <div class="card-header"><i class="fas fa-tachometer-alt"></i> Model Performance (Prediction)</div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th class="text-end">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>RMSE</td><td class="text-end">{{ metrics_predicted.rmse|floatformat:2 }}m</td></tr>
+                            <tr><td>MSE</td><td class="text-end">{{ metrics_predicted.mse|floatformat:2 }} m²</td></tr>
+                            <tr><td>NSE</td><td class="text-end">{{ metrics_predicted.nse|floatformat:2 }} %</td></tr>
+                            <tr><td>Correlation</td><td class="text-end">{{ metrics_predicted.coeff|floatformat:2 }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %} -->
+
+    
+
+    <div class="col-lg-3 col-md-6">
+      <div class="dashboard-card">
+          <div class="card-header"><i class="fas fa-exclamation-triangle"></i> Anomaly Detection</div>
+          <div class="card-body">
+              <div class="metrics-grid">
+                  <div class="metric-card"><div class="metric-title">Current Status</div><div class="status status-good">Normal</div></div> {# Example static #}
+                  <div class="metric-card"><div class="metric-title">Last Anomaly</div><div class="metric-value">28 Mar</div></div> {# Example static #}
+                  <div class="metric-card"><div class="metric-title">Detection Rate</div><div class="metric-value">96.3%</div></div> {# Example static #}
+                  <div class="metric-card"><div class="metric-title">False Alarms</div><div class="metric-value">2.1%</div></div> {# Example static #}
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block extra_scripts %}
+{# Load levels.js. Ensure it's modified to handle Matplotlib image updates via AJAX. #}
+<!-- <script src="{% static 'js/levels.js' %}" defer></script> -->
+{% endblock extra_scripts %}

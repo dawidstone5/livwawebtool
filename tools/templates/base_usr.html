@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}LIVWA Water Analysis Platform{% endblock title %}
+
+    {% block extra_head %}{% endblock extra_head %}
+
+
+            {% block nav_div %}
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                            href="{% url 'home' %}"><i class="fas fa-home fa-fw me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="analysisDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-chart-line fa-fw me-1"></i> Tools
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="analysisDropdown">
+                            <li><a class="dropdown-item" href="{% url 'tools' %}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'bias' %}">Bias Correction</a></li>
+                            <li><a class="dropdown-item" href="{% url 'levels' %}">Water Level Prediction</a></li>
+                            <li><a class="dropdown-item" href="#">Climate Analysis</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}"
+                            href="{% url 'reports' %}"><i class="fas fa-file-alt fa-fw me-1"></i> Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'support' %}active{% endif %}"
+                            href="{% url 'support' %}"><i class="fas fa-question-circle fa-fw me-1"></i> Support</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'account' %}active{% endif %}"
+                            href="#"><i class="fas fa-user fa-fw me-1"></i> Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt fa-fw me-1"></i>
+                            Logout</a>
+                    </li>
+                </ul>
+            </div>
+            {% endblock nav_div %}
+            
+            
+        {% block header %}
+        {% endblock header %}
+        
+        {% block content %}
+        {% endblock content %}
+        
+    {% block extra_scripts %}{% endblock extra_scripts %}
