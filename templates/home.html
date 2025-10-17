@@ -1,0 +1,612 @@
+{% extends template_name %}
+
+{% load static %}
+
+{% block title %}Dashboard - LIVWA{% endblock title %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock extra_head %}
+
+{% block header %}
+<div class="hero-section">
+    <div class="hero-image-wrapper">
+        <img src="{% static 'images/lakeVic0.png' %}" alt="Lake Victoria" class="hero-image">
+        <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+        <h1 class="hero-title" data-aos="fade-up">Lake Victoria Advanced Water Management</h1>
+        <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="100">Empowering Action Through Accurate Water Data</p>
+        <div class="hero-cta" data-aos="fade-up" data-aos-delay="200">
+            <a href="#tools" class="btn-hero btn-hero-primary">Explore Tools</a>
+            <a href="#team" class="btn-hero btn-hero-outline">Meet Our Team</a>
+        </div>
+    </div>
+    <div class="scroll-indicator">
+        <i class="fas fa-chevron-down"></i>
+    </div>
+</div>
+{% endblock header %}
+
+{% block content %}
+<div class="content-wrapper">
+
+    <!-- About Section -->
+    <section class="section-about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-card" data-aos="fade-right">
+                    <div class="about-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h3 class="about-title">Background</h3>
+                    <p class="about-text">
+                        Lake Victoria faces severe water level fluctuations driven by climate change and suboptimal
+                        regulation of dam releases. These fluctuations threaten dam safety, ecosystems, and
+                        livelihoods. There is a lack of accurate, real-time forecasting tools to support dam operations.
+                    </p>
+                </div>
+                <div class="about-card" data-aos="fade-left">
+                    <div class="about-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3 class="about-title">Goals</h3>
+                    <ul class="about-list">
+                        <li><i class="fas fa-check-circle"></i> Develop advanced hydrological and climate models</li>
+                        <li><i class="fas fa-check-circle"></i> Implement optimization algorithms for real-time water resource scheduling</li>
+                        <li><i class="fas fa-check-circle"></i> Create a decision support system for dam operators</li>
+                        <li><i class="fas fa-check-circle"></i> Build capacity in data-driven modeling among local experts</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section-stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item" data-aos="zoom-in" data-aos-delay="0">
+                    <div class="stat-icon"><i class="fas fa-water"></i></div>
+                    <div class="stat-number">68,800</div>
+                    <div class="stat-label">km² Lake Area</div>
+                </div>
+                <div class="stat-item" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-number">30</div>
+                    <div class="stat-label">M+ People Affected</div>
+                </div>
+                <div class="stat-item" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-number">95</div>
+                    <div class="stat-label">% Prediction Accuracy</div>
+                </div>
+                <div class="stat-item" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-icon"><i class="fas fa-database"></i></div>
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">M+ Data Points</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="section-tools">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">Our Tools</h2>
+                <p class="section-subtitle">Powerful solutions for water management and analysis</p>
+            </div>
+            
+            <div class="tools-carousel-wrapper">
+                <button class="carousel-nav carousel-prev" aria-label="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <div class="tools-carousel">
+                    <div class="tool-card" data-aos="fade-up" data-aos-delay="0">
+                        <div class="tool-icon tool-icon-primary">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h5 class="tool-title">Bias Correction</h5>
+                        <p class="tool-description">Adjust remotely sensed data to align with observed values using advanced correction algorithms.</p>
+                        <a href="{% url 'bias' %}" class="tool-link">Use Tool <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="tool-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="tool-icon tool-icon-success">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5 class="tool-title">Water Level Prediction</h5>
+                        <p class="tool-description">Predict water level changes using machine learning trained on historical hydrological data.</p>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'levels' %}" class="tool-link">Use Tool <i class="fas fa-arrow-right"></i></a>
+                        {% else %}
+                        <a href="{% url 'accounts:login' %}" class="tool-link">Use Tool <i class="fas fa-arrow-right"></i></a>
+                        {% endif %}
+                    </div>
+
+                    <div class="tool-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="tool-icon tool-icon-info">
+                            <i class="fas fa-cloud-sun"></i>
+                        </div>
+                        <h5 class="tool-title">Climate Analysis</h5>
+                        <p class="tool-description">Analyze trends and impacts of climate change on critical water resources with specialized tools.</p>
+                        <a href="#" class="tool-link">Use Tool <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="tool-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="tool-icon tool-icon-warning">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h5 class="tool-title">Report Generation</h5>
+                        <p class="tool-description">Automatically generate detailed reports from your analysis results with customizable templates.</p>
+                        <a href="{% url 'reports' %}" class="tool-link">Use Tool <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="tool-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="tool-icon tool-icon-secondary">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h5 class="tool-title">User Support</h5>
+                        <p class="tool-description">Access tutorials, documentation, and get help from our support team.</p>
+                        <a href="{% url 'support' %}" class="tool-link">Get Support <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="tool-card" data-aos="fade-up" data-aos-delay="500">
+                        <div class="tool-icon tool-icon-dark">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h5 class="tool-title">Recent Activity</h5>
+                        <p class="tool-description">View and resume your recent analysis sessions and access saved results.</p>
+                        <a href="#" class="tool-link">View History <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <button class="carousel-nav carousel-next" aria-label="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section - Modern Enhanced Table -->
+    <section id="team" class="section-team">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">Project Team</h2>
+                <p class="section-subtitle">Dedicated experts from <a href="https://mak.ac.ug/" target="_blank" >Makerere University</a> and <a href="https://www.uegcl.com/" target="_blank" >UEGCL</a> working together to revolutionize water management on Lake Victoria</p>
+            </div>
+            
+            <div class="team-table-container" data-aos="fade-up" data-aos-delay="100">
+                <!-- Filter Pills -->
+                <div class="team-filters">
+                    <button class="filter-pill active" data-filter="all">
+                        <i class="fas fa-users"></i> All Team
+                    </button>
+                    <button class="filter-pill" data-filter="makerere">
+                        <i class="fas fa-university"></i> Makerere University
+                    </button>
+                    <button class="filter-pill" data-filter="uegcl">
+                        <i class="fas fa-bolt"></i> UEGCL
+                    </button>
+                </div>
+                
+                <div class="team-table-wrapper">
+                    <table class="team-table-modern">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="th-content">
+                                        <span>Team Member</span>
+                                    </div>
+                                </th>
+                                <!-- <th>
+                                    <div class="th-content">
+                                        <span>Role</span>
+                                    </div>s
+                                </th> -->
+                                <th>
+                                    <div class="th-content">
+                                        <span>Institution</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="team-row" data-institution="makerere">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Prof. Dr. Eng. Henry M. Alinaitwe</span>
+                                            <!-- <span class="member-title">Principal Investigator</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-primary">
+                                            <span>Principal Investigator</span>
+                                        </span>
+                                        <span>Principal Investigator</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-makerere">
+                                            <span>Makerere University</span>
+                                        </div> -->
+                                        <span>Makerere University</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="makerere">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Mr. Martin Tumutungire</span>
+                                            <!-- <span class="member-title">Co-Principal Investigator</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-secondary">
+                                            <span>Co-Principal Investigator</span>
+                                        </span>
+                                        <span>Co-Principal Investigator</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-makerere">
+                                            <span>Makerere University</span>
+                                        </div> -->
+                                        <span>Makerere University</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="makerere">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Dr. Ronald Ekyalimpa</span>
+                                            <!-- <span class="member-title">Co-Principal Investigator</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-secondary">
+                                            <span>Co-Principal Investigator</span>
+                                        </span>
+                                        <span>Co-Principal Investigator</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-makerere">
+                                            <span>Makerere University</span>
+                                        </div> -->
+                                        <span>Makerere University</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="uegcl">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Dr. Kayondo Muzafalu</span>
+                                            <!-- <span class="member-title">Data Scientist</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-success">
+                                            <span>Data Scientist</span>
+                                        </span>
+                                        <span>Head Research And Business Development</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-uegcl">
+                                            <span>UEGCL</span>
+                                        </div> -->
+                                        <span>UEGCL</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="uegcl">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Eng. Musa Mukulu</span>
+                                            <!-- <span class="member-title">Data Scientist</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-success">
+                                            <span>Data Scientist</span>
+                                        </span>
+                                        <span>Electrical Engineer</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-uegcl">
+                                            <span>UEGCL</span>
+                                        </div> -->
+                                        <span>UEGCL</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="uegcl">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Eng. Dr. Mary Akurut</span>
+                                            <!-- <span class="member-title">Data Scientist</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-success">
+                                            <span>Data Scientist</span>
+                                        </span>
+                                        <span>Chief Safety, Health, Environment & Quality (SHEQ) Officer</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-uegcl">
+                                            <span>UEGCL</span>
+                                        </div> -->
+                                        <span>UEGCL</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="null">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Eng. Dr. Jotham I. Sempewo</span>
+                                            <!-- <span class="member-title">Data Scientist</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-success">
+                                            <span>Data Scientist</span>
+                                        </span>
+                                        <span>Head of Estates and Administration</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-uegcl">
+                                            <span>UEGCL</span>
+                                        </div> -->
+                                        <span> </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="uegcl">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Mr. Allan Kasedde</span>
+                                            <!-- <span class="member-title">Data Scientist</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-success">
+                                            <span>Data Scientist</span>
+                                        </span>
+                                        <span>Mechanical Engineer</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-uegcl">
+                                            <span>UEGCL</span>
+                                        </div> -->
+                                        <span>UEGCL</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="makerere">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Mr. Emmanuel Okello</span>
+                                            <!-- <span class="member-title">Research Assistant</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-info">
+                                            <span>Research Assistant</span>
+                                        </span>
+                                        <span>Research Assistant</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-makerere">
+                                            <span>Makerere University</span>
+                                        </div> -->
+                                        <span>Makerere University</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="team-row" data-institution="makerere">
+                                <td>
+                                    <div class="member-cell">
+                                        <div class="member-details">
+                                            <span class="member-name">Mr. David Kasumba</span>
+                                            <!-- <span class="member-title">Research Assistant</span> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="role-cell">
+                                        <span class="role-badge-modern role-warning">
+                                            <span>Research Assistant</span>
+                                        </span>
+                                        <span>Research Assistant</span>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="institution-cell">
+                                        <!-- <div class="institution-badge badge-makerere">
+                                            <span>Makerere University</span>
+                                        </div> -->
+                                        <span>Makerere University</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Team Stats -->
+                <div class="team-stats-bar">
+                    <div class="stat-item-inline">
+                        <i class="fas fa-users"></i>
+                        <span class="stat-number">10</span>
+                        <span class="stat-label">Team Members</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item-inline">
+                        <i class="fas fa-university"></i>
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">From Makerere</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item-inline">
+                        <i class="fas fa-bolt"></i>
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">From UEGCL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- funding Section -->
+    <section class="section-partners">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">Funding</h2>
+                <p class="section-subtitle">This project is funded By Government of Uganda through Makerere University Research and Innovations Fund</p>
+            </div>
+            
+            <div class="partners-grid">
+                <a href="https://rif.mak.ac.ug/" target="_blank" class="partner-card" data-aos="zoom-in" data-aos-delay="200">
+                    <img src="{% static 'images/Mak-RIF.png' %}" alt="Mak-RIF">
+                    <div class="partner-info">
+                        <h6>Makerere University</h6>
+                        <p>Research and Innovations Fund</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="text-center mt-5" data-aos="fade-up">
+                <a href="#" class="btn-hero btn-hero-primary">Become a Sponsor</a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- CTA Section -->
+    <section class="section-cta">
+        <div class="container">
+            <div class="cta-content" data-aos="zoom-in">
+                <h2 class="cta-title">Ready to Transform Water Management?</h2>
+                <p class="cta-text">Join our community of experts, researchers, and stakeholders working towards sustainable water resource management in Lake Victoria.</p>
+                <a href="#" class="btn-hero btn-hero-light">Join the Community <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+// Simple AOS (Animate On Scroll) implementation
+document.addEventListener('DOMContentLoaded', function() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('aos-animate');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('[data-aos]').forEach(el => {
+        observer.observe(el);
+    });
+});
+
+
+// Team Table Filter Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-pill');
+    const teamRows = document.querySelectorAll('.team-row');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter rows
+            teamRows.forEach(row => {
+                if (filter === 'all') {
+                    row.style.display = '';
+                    setTimeout(() => row.classList.add('visible'), 10);
+                } else {
+                    const institution = row.getAttribute('data-institution');
+                    if (institution === filter) {
+                        row.style.display = '';
+                        setTimeout(() => row.classList.add('visible'), 10);
+                    } else {
+                        row.classList.remove('visible');
+                        setTimeout(() => row.style.display = 'none', 300);
+                    }
+                }
+            });
+        });
+    });
+    
+    // Initialize all rows as visible
+    teamRows.forEach(row => row.classList.add('visible'));
+});
+</script>
+{% endblock content %}

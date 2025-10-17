@@ -1,0 +1,183 @@
+{% extends template_name %}
+{% load static %}
+
+{% block title %}Profile - LIVWA{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10">
+            <!-- Profile Header -->
+            <div class="card shadow mb-4">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="avatar-circle mx-auto mb-3">
+                            <i class="fas fa-user fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-envelope me-1"></i> {{ user.email }}
+                        </p>
+                        <small class="text-muted">
+                            Member since {{ user.date_joined|date:"F Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Profile Information -->
+                <div class="col-md-8">
+                    <div class="card shadow">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user-edit me-2"></i> Profile Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if messages %}
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="post" novalidate>
+                                {% csrf_token %}
+                                
+                                {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">
+                                        {{ field.label }}
+                                        {% if field.field.required %}
+                                        <span class="text-danger">*</span>
+                                        {% endif %}
+                                    </label>
+                                    
+                                    {% if field.field.widget.input_type == 'textarea' %}
+                                    <textarea name="{{ field.name }}" 
+                                              id="{{ field.id_for_label }}"
+                                              class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                              rows="3"
+                                              {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
+                                    {% else %}
+                                    <input type="{{ field.field.widget.input_type }}" 
+                                           name="{{ field.name }}" 
+                                           id="{{ field.id_for_label }}"
+                                           value="{{ field.value|default:'' }}"
+                                           class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                           {% if field.field.required %}required{% endif %}>
+                                    {% endif %}
+                                    
+                                    {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    
+                                    {% if field.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in field.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Settings -->
+                <div class="col-md-4">
+                    <!-- Security Settings -->
+                    <div class="card shadow mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-shield-alt me-2"></i> Security
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'accounts:password_reset' %}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-key me-1"></i> Change Password
+                                </a>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Last login: {{ user.last_login|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Account Activity -->
+                    <div class="card shadow mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-chart-line me-2"></i> Activity
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="fas fa-file-alt text-primary me-2"></i>
+                                    <small>0 Reports Generated</small>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-chart-bar text-success me-2"></i>
+                                    <small>0 Analyses Completed</small>
+                                </li>
+                                <li class="mb-0">
+                                    <i class="fas fa-database text-info me-2"></i>
+                                    <small>0 Datasets Uploaded</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="card shadow border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i> Danger Zone
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted mb-3">
+                                Once you delete your account, there is no going back. Please be certain.
+                            </p>
+                            <a href="{% url 'accounts:delete_account' %}" class="btn btn-danger btn-sm w-100">
+                                <i class="fas fa-trash me-1"></i> Delete Account
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-circle i {
+    color: white !important;
+}
+</style>
+{% endblock content %}

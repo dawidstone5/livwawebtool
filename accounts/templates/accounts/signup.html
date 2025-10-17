@@ -1,0 +1,283 @@
+{% extends template_name %}
+{% load static %}
+
+{% block title %}Sign Up - LIVWA{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h3><i class="fas fa-user-plus"></i> Create Account</h3>
+                    <p class="text-muted small mb-0">Join LIVWA Water Analysis Platform</p>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" novalidate id="signupForm">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {{ field.label }}
+                                {% if field.field.required %}
+                                <span class="text-danger">*</span>
+                                {% endif %}
+                            </label>
+                            
+                            {% if field.name == 'password1' or field.name == 'password2' %}
+                            <div class="input-group">
+                                <input type="password" 
+                                       name="{{ field.name }}" 
+                                       id="{{ field.id_for_label }}"
+                                       class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                       {% if field.field.required %}required{% endif %}>
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% if field.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in field.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% elif field.name == 'email' %}
+                            <input type="email" 
+                                   name="{{ field.name }}" 
+                                   id="{{ field.id_for_label }}"
+                                   class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                   placeholder="your.email@example.com"
+                                   {% if field.field.required %}required{% endif %}>
+                            {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in field.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <input type="text" 
+                                   name="{{ field.name }}" 
+                                   id="{{ field.id_for_label }}"
+                                   class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                   {% if field.field.required %}required{% endif %}>
+                            {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in field.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                            <small class="form-text text-muted d-block mt-1">
+                                {{ field.help_text }}
+                            </small>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <!-- Password Strength Indicator -->
+                        <div class="mb-3" id="passwordStrength" style="display: none;">
+                            <label class="form-label small">Password Strength:</label>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <small class="text-muted" id="strengthText"></small>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                            <label class="form-check-label small" for="termsCheck">
+                                I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms of Service</a> 
+                                and <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 mt-3">
+                            <i class="fas fa-user-plus me-2"></i> Create Account
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="mb-0">
+                            Already have an account? 
+                            <a href="{% url 'accounts:login' %}" class="text-decoration-none">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="alert alert-info mt-3" role="alert">
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>Privacy & Security:</strong> Your information is encrypted and protected. 
+                We'll never share your personal data without your consent.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Acceptance of Terms</h6>
+                <p>By accessing and using LIVWA platform, you accept and agree to be bound by these Terms of Service.</p>
+                
+                <h6>2. Use License</h6>
+                <p>Permission is granted to use the platform for water analysis and management purposes.</p>
+                
+                <h6>3. User Responsibilities</h6>
+                <ul>
+                    <li>Maintain confidentiality of your account credentials</li>
+                    <li>Use the platform in compliance with applicable laws</li>
+                    <li>Not misuse or attempt to compromise platform security</li>
+                </ul>
+                
+                <h6>4. Data Usage</h6>
+                <p>Your data and analysis results are protected. We use industry-standard security measures.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Information We Collect</h6>
+                <p>We collect information that you provide directly, including:</p>
+                <ul>
+                    <li>Account information (username, email, password)</li>
+                    <li>Profile information</li>
+                    <li>Analysis data and results</li>
+                </ul>
+                
+                <h6>How We Use Your Information</h6>
+                <ul>
+                    <li>To provide and maintain the platform</li>
+                    <li>To improve our services</li>
+                    <li>To communicate with you about updates</li>
+                </ul>
+                
+                <h6>Data Security</h6>
+                <p>We implement appropriate security measures to protect your personal information.</p>
+                
+                <h6>Your Rights</h6>
+                <p>You have the right to access, update, or delete your personal information at any time.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle password visibility
+document.querySelectorAll('.toggle-password').forEach(button => {
+    button.addEventListener('click', function() {
+        const input = this.previousElementSibling;
+        const icon = this.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+});
+
+// Password strength checker
+const passwordInput = document.querySelector('input[name="password1"]');
+if (passwordInput) {
+    const strengthDiv = document.getElementById('passwordStrength');
+    const progressBar = strengthDiv.querySelector('.progress-bar');
+    const strengthText = document.getElementById('strengthText');
+    
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        if (password.length === 0) {
+            strengthDiv.style.display = 'none';
+            return;
+        }
+        
+        strengthDiv.style.display = 'block';
+        let strength = 0;
+        
+        // Check length
+        if (password.length >= 8) strength += 25;
+        if (password.length >= 12) strength += 25;
+        
+        // Check for numbers
+        if (/\d/.test(password)) strength += 15;
+        
+        // Check for lowercase and uppercase
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 20;
+        
+        // Check for special characters
+        if (/[^A-Za-z0-9]/.test(password)) strength += 15;
+        
+        // Update progress bar
+        progressBar.style.width = strength + '%';
+        
+        // Update color and text
+        if (strength < 40) {
+            progressBar.className = 'progress-bar bg-danger';
+            strengthText.textContent = 'Weak';
+        } else if (strength < 70) {
+            progressBar.className = 'progress-bar bg-warning';
+            strengthText.textContent = 'Medium';
+        } else {
+            progressBar.className = 'progress-bar bg-success';
+            strengthText.textContent = 'Strong';
+        }
+    });
+}
+
+// Form validation
+document.getElementById('signupForm').addEventListener('submit', function(e) {
+    const termsCheck = document.getElementById('termsCheck');
+    if (!termsCheck.checked) {
+        e.preventDefault();
+        alert('Please accept the Terms of Service and Privacy Policy to continue.');
+        termsCheck.focus();
+    }
+});
+</script>
+{% endblock content %}

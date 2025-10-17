@@ -1,0 +1,165 @@
+{% extends template_name %}
+{% load static %}
+
+{% block title %}Delete Account - LIVWA{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow border-danger">
+                <div class="card-header text-center bg-danger text-white">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Delete Account</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-times fa-4x text-danger mb-3"></i>
+                        <h4>We're Sorry to See You Go</h4>
+                        <p class="text-muted">
+                            Are you sure you want to permanently delete your account?
+                        </p>
+                    </div>
+
+                    <div class="alert alert-danger" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Warning: This Action Cannot Be Undone!
+                        </h5>
+                        <hr>
+                        <p class="mb-0">
+                            Deleting your account will permanently remove:
+                        </p>
+                        <ul class="mt-2 mb-0">
+                            <li>Your profile information</li>
+                            <li>All your saved analysis and reports</li>
+                            <li>Your project history and data</li>
+                            <li>All associated settings and preferences</li>
+                            <li>Access to premium features (if applicable)</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <strong><i class="fas fa-info-circle me-2"></i> Before You Go:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Download any important data or reports you want to keep</li>
+                            <li>Cancel any active subscriptions or services</li>
+                            <li>Consider deactivating instead of deleting (contact support)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Feedback Section -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-comment-dots me-2"></i>
+                                Help Us Improve
+                            </h6>
+                            <p class="card-text small">
+                                We'd love to know why you're leaving. Your feedback helps us improve LIVWA for everyone.
+                            </p>
+                            <a href="{% url 'support' %}" class="btn btn-sm btn-outline-primary">
+                                Share Feedback
+                            </a>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Confirmation Form -->
+                    <form method="post" onsubmit="return confirmDelete();">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <strong>Type "DELETE" to confirm:</strong>
+                            </label>
+                            <input type="text" 
+                                   id="confirmText" 
+                                   class="form-control" 
+                                   placeholder="Type DELETE in capital letters"
+                                   required>
+                            <small class="form-text text-muted">
+                                This helps prevent accidental deletions.
+                            </small>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="confirmCheckbox" 
+                                   required>
+                            <label class="form-check-label" for="confirmCheckbox">
+                                I understand that this action is permanent and cannot be undone.
+                            </label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-trash me-2"></i> Delete My Account Permanently
+                            </button>
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i> Cancel, Keep My Account
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Alternative Options -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        Looking for Alternatives?
+                    </h6>
+                    <p class="card-text small">
+                        If you're having issues with your account, we can help:
+                    </p>
+                    <ul class="small">
+                        <li>Reset your password or update account settings</li>
+                        <li>Temporarily deactivate your account</li>
+                        <li>Clear your data but keep your account</li>
+                        <li>Speak with our support team</li>
+                    </ul>
+                    <a href="{% url 'support' %}" class="btn btn-sm btn-primary">
+                        Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete() {
+    const confirmText = document.getElementById('confirmText').value;
+    const confirmCheckbox = document.getElementById('confirmCheckbox').checked;
+    
+    if (confirmText !== 'DELETE') {
+        alert('Please type "DELETE" in capital letters to confirm.');
+        return false;
+    }
+    
+    if (!confirmCheckbox) {
+        alert('Please confirm that you understand this action is permanent.');
+        return false;
+    }
+    
+    // Final confirmation dialog
+    return confirm(
+        'This is your final warning!\n\n' +
+        'Are you absolutely sure you want to delete your account?\n\n' +
+        'This action CANNOT be undone and all your data will be permanently lost.'
+    );
+}
+</script>
+{% endblock content %}

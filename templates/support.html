@@ -1,0 +1,92 @@
+{% extends template_name %}
+
+
+{% load static %}
+
+{% block title %}Support - LIVWA{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-4 text-center">Support Center</h1>
+  <p class="lead text-center">Find guidance on how to use the tools provided by LIVWA and get in touch with our support team for assistance.</p>
+
+  <!-- FAQs Section -->
+  <div class="row g-4 mb-5">
+    <div class="col-lg-12">
+      <div class="dashboard-card">
+        <div class="card-header text-center"><i class="fas fa-info-circle"></i> Frequently Asked Questions</div>
+        <div class="card-body">
+          <div class="accordion" id="faqAccordion">
+            <!-- QUESTION 1 -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="faq1Heading">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true" aria-controls="faq1">
+                  How do I upload data for Bias Correction?
+                </button>
+              </h2>
+              <div id="faq1" class="accordion-collapse collapse show" aria-labelledby="faq1Heading" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  Navigate to the Bias Correction tool and upload your observation and remote sensing data files in supported formats (CSV, XLS, or XLSX).
+                </div>
+              </div>
+            </div>
+            <!-- QUESTION 2 -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="faq2Heading">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                  What formats are supported for data uploads?
+                </button>
+              </h2>
+              <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2Heading" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  We support CSV, XLS, and XLSX formats for data uploads. Ensure your files are properly formatted before uploading.
+                </div>
+              </div>
+            </div>
+            <!-- QUESTION 3 -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="faq3Heading">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+                  How do I export reports?
+                </button>
+              </h2>
+              <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3Heading" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  Use the Reports tool to generate and download analysis reports in PDF or Word format. Select the content to include and choose your preferred format.
+                </div>
+              </div>
+            </div>
+            <!-- QUESTION [#] -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Support Section -->
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 50vh;">
+    <div class="dashboard-card" style="width: 100%; max-width: 80%;">
+      <div class="card-header text-center"><i class="fas fa-envelope"></i> Contact Support</div>
+      <div class="card-body">
+        <p class="text-center">If you have any questions or need assistance, feel free to reach out to our support team.</p>
+        <form method="POST" action="{% url 'support' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="name" class="form-label">Your Name</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Enter your name" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Your Email</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="e.g., example@domain.com" required>
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Your Message</label>
+            <textarea id="message" name="message" class="form-control" rows="4" placeholder="Write your message here..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary w-100"><i class="fas fa-paper-plane me-2"></i> Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

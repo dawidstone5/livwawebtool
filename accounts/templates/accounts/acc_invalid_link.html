@@ -1,0 +1,58 @@
+{% extends template_name %}
+{% load static %}
+
+{% block title %}Invalid Activation Link - LIVWA{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-header text-center bg-danger text-white">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Invalid Link</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-times-circle fa-4x text-danger"></i>
+                    </div>
+                    
+                    <h4 class="mb-3">Activation Link Invalid or Expired</h4>
+                    
+                    <p class="text-muted mb-4">
+                        The activation link you used is either invalid or has expired. 
+                        Activation links are only valid for 24 hours for security reasons.
+                    </p>
+
+                    <div class="alert alert-warning" role="alert">
+                        <strong><i class="fas fa-info-circle me-2"></i> Possible Reasons:</strong>
+                        <ul class="text-start mt-2 mb-0">
+                            <li>The link has expired (older than 24 hours)</li>
+                            <li>The account has already been activated</li>
+                            <li>The link was incomplete or corrupted</li>
+                            <li>The link has already been used</li>
+                        </ul>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'accounts:signup' %}" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i> Create New Account
+                        </a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-sign-in-alt me-2"></i> Try Logging In
+                        </a>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="small text-muted">
+                            If you believe this is an error, please 
+                            <a href="{% url 'support' %}">contact our support team</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
