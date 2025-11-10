@@ -1,26 +1,95 @@
 {% extends template_name %}
 
-
 {% load static %}
 
 {% block title %}Water Level Prediction - LIVWA{% endblock title %}
 
 {% block extra_head %}
-{# Add any other page-specific head elements here if needed #}
-<!-- <style>
-  .chart-container img {
-    max-width: 100%;
-    height: auto;
-    border: 1px solid #ddd; /* Optional: adds a border around the chart image */
-  }
+<style>
   .chart-container {
-    min-height: 300px; /* Ensure container has some height even if image is missing initially */
+    min-height: 350px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f8f9fa; /* Light background for the chart area */
+    background-color: #f8f9fa;
+    position: relative;
   }
-</style> -->
+  
+  .chart-container img {
+    max-width: 100%;
+    height: auto;
+    max-height: 350px;
+  }
+
+  /* Loading Spinner Styles */
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(248, 249, 250, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #e9ecef;
+    border-top: 5px solid #0066cc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    margin-top: 20px;
+    color: #6c757d;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .loading-subtext {
+    margin-top: 8px;
+    color: #adb5bd;
+    font-size: 14px;
+  }
+
+  /* Pulse animation for loading dots */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .loading-dots {
+    display: inline-block;
+  }
+
+  .loading-dots span {
+    animation: pulse 1.4s infinite;
+  }
+
+  .loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  /* Hide loading overlay by default */
+  .loading-overlay.hidden {
+    display: none;
+  }
+</style>
 {% endblock extra_head %}
 
 {% block content %}
@@ -63,22 +132,22 @@
             <div class="metrics-grid">
                 <div class="metric-card">
                     <div class="metric-title">Current</div>
-                    <div class="metric-value">87%</div> {# Example static value #}
+                    <div class="metric-value">87%</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-title">7-Day Avg</div>
-                    <div class="metric-value">85%</div> {# Example static value #}
+                    <div class="metric-value">85%</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-title">Trend</div>
-                    <div class="status status-good">Stable</div> {# Example static value #}
+                    <div class="status status-good">Stable</div>
                 </div>
             </div>
           </div>
       </div>
     </div>
 
-    {% if metrics_trained %} {# This variable is not in the provided view context, assumed to be handled elsewhere #}
+    {% if metrics_trained %}
     <div class="col-lg-4 col-md-12">
         <div class="dashboard-card">
             <div class="card-header"><i class="fas fa-crosshairs"></i> Prediction Accuracy (Trained Model)</div>
@@ -108,17 +177,29 @@
         <div class="dashboard-card">
             <div class="card-header"><i class="fas fa-chart-area"></i> Prediction </div>
             <div class="card-body">
-                <div class="chart-container text-center">
-                    {% if plot_base64 %}
-                        <img src="data:image/png;base64,{{ plot_base64 }}" alt="{{ selected_variable_name }} Prediction Chart" class="img-fluid" style="max-height: 350px;">
-                    {% else %}
-                        <div class="d-flex justify-content-center align-items-center h-100">
-                            <div>
-                                <i class="fas fa-chart-area fa-4x text-muted opacity-50"></i>
-                                <p class="ms-2 text-muted mt-2">Please fill and submit the prediction range to view Chart.</p>
-                            </div>
+                <div class="chart-container text-center" id="chartContainer">
+                    <!-- Loading Overlay -->
+                    <div class="loading-overlay hidden" id="loadingOverlay">
+                        <div class="spinner"></div>
+                        <div class="loading-text">
+                            Generating Prediction<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
                         </div>
-                    {% endif %}
+                        <div class="loading-subtext">This may take a few moments</div>
+                    </div>
+
+                    <!-- Chart Content -->
+                    <div id="chartContent">
+                        {% if plot_base64 %}
+                            <img src="data:image/png;base64,{{ plot_base64 }}" alt="Water Level Prediction Chart" class="img-fluid">
+                        {% else %}
+                            <div class="d-flex justify-content-center align-items-center h-100">
+                                <div>
+                                    <i class="fas fa-chart-area fa-4x text-muted opacity-50"></i>
+                                    <p class="ms-2 text-muted mt-2">Please fill and submit the prediction range to view Chart.</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -140,49 +221,23 @@
                         <label for="reference-end" class="form-label">Enter End Date</label>
                         <input type="date" id="reference-end" name="reference_end" class="form-control form-control-sm" value="{{ reference_end_date|default:''|date:'Y-m-d' }}" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Apply Changes</button>
+                    <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                        <i class="fas fa-play-circle me-2"></i>Apply Changes
+                    </button>
                 </form>
             </div>
         </div>
     </div>
-
-    <!-- {% if metrics_predicted %} {# This variable is not in the provided view context #}
-    <div class="col-lg-3 col-md-6">
-        <div class="dashboard-card">
-            <div class="card-header"><i class="fas fa-tachometer-alt"></i> Model Performance (Prediction)</div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>Metric</th>
-                                <th class="text-end">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>RMSE</td><td class="text-end">{{ metrics_predicted.rmse|floatformat:2 }}m</td></tr>
-                            <tr><td>MSE</td><td class="text-end">{{ metrics_predicted.mse|floatformat:2 }} m²</td></tr>
-                            <tr><td>NSE</td><td class="text-end">{{ metrics_predicted.nse|floatformat:2 }} %</td></tr>
-                            <tr><td>Correlation</td><td class="text-end">{{ metrics_predicted.coeff|floatformat:2 }}</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %} -->
-
-    
 
     <div class="col-lg-3 col-md-6">
       <div class="dashboard-card">
           <div class="card-header"><i class="fas fa-exclamation-triangle"></i> Anomaly Detection</div>
           <div class="card-body">
               <div class="metrics-grid">
-                  <div class="metric-card"><div class="metric-title">Current Status</div><div class="status status-good">Normal</div></div> {# Example static #}
-                  <div class="metric-card"><div class="metric-title">Last Anomaly</div><div class="metric-value">28 Mar</div></div> {# Example static #}
-                  <div class="metric-card"><div class="metric-title">Detection Rate</div><div class="metric-value">96.3%</div></div> {# Example static #}
-                  <div class="metric-card"><div class="metric-title">False Alarms</div><div class="metric-value">2.1%</div></div> {# Example static #}
+                  <div class="metric-card"><div class="metric-title">Current Status</div><div class="status status-good">Normal</div></div>
+                  <div class="metric-card"><div class="metric-title">Last Anomaly</div><div class="metric-value">28 Mar</div></div>
+                  <div class="metric-card"><div class="metric-title">Detection Rate</div><div class="metric-value">96.3%</div></div>
+                  <div class="metric-card"><div class="metric-title">False Alarms</div><div class="metric-value">2.1%</div></div>
               </div>
           </div>
       </div>
@@ -192,6 +247,24 @@
 {% endblock content %}
 
 {% block extra_scripts %}
-{# Load levels.js. Ensure it's modified to handle Matplotlib image updates via AJAX. #}
-<!-- <script src="{% static 'js/levels.js' %}" defer></script> -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('predictionControlForm');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const chartContent = document.getElementById('chartContent');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    form.addEventListener('submit', function(e) {
+        // Show loading overlay
+        loadingOverlay.classList.remove('hidden');
+        
+        // Disable submit button to prevent double submission
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        
+        // Optional: Hide the chart content while loading
+        chartContent.style.opacity = '0.3';
+    });
+});
+</script>
 {% endblock extra_scripts %}
