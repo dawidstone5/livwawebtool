@@ -5,6 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
@@ -89,10 +90,16 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, f'Welcome back, {user.username}!')
-            
-            # Redirect to next parameter or home
-            next_url = request.GET.get('next', 'home')
-            return redirect(next_url)
+
+            # Redirect to next parameter or home, guarding against open redirects
+            next_url = request.GET.get('next')
+            if next_url and url_has_allowed_host_and_scheme(
+                url=next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(next_url)
+            return redirect('home')
         else:
             messages.error(request, 'Invalid username or password.')
     else:

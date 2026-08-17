@@ -540,123 +540,6 @@
 }
 
 /* ===================================
-   Team Section
-   =================================== */
-.section-team {
-    padding: 6rem 0;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-}
-
-.team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-    gap: 2.5rem;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.team-card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.team-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(90deg, #3498db 0%, #1abc9c 100%);
-    transform: scaleX(0);
-    transition: transform 0.4s ease;
-}
-
-.team-card:hover::before {
-    transform: scaleX(1);
-}
-
-.team-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-}
-
-.team-avatar {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 1.5rem;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #84c8e5 0%, #5a9fb8 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 30px rgba(132, 200, 229, 0.3);
-    transition: all 0.4s ease;
-    position: relative;
-}
-
-.team-avatar::after {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    background: linear-gradient(135deg, #3498db, #1abc9c) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.team-card:hover .team-avatar {
-    transform: scale(1.1) rotate(5deg);
-}
-
-.team-card:hover .team-avatar::after {
-    opacity: 1;
-}
-
-.team-avatar i {
-    font-size: 4rem;
-    color: #ffffff;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
-}
-
-.team-name {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.8rem;
-    line-height: 1.4;
-}
-
-.team-role {
-    font-size: 0.95rem;
-    color: #3498db;
-    font-weight: 600;
-    margin-bottom: 1.2rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-}
-
-.team-bio {
-    font-size: 1rem;
-    color: #6c757d;
-    line-height: 1.7;
-    margin-bottom: 0;
-}
-
-/* ===================================
    Partners Section
    =================================== */
 .section-partners {
@@ -854,8 +737,7 @@
     }
     
     .about-card,
-    .tool-card,
-    .team-card {
+    .tool-card {
         padding: 2rem 1.5rem;
     }
 }
@@ -896,7 +778,7 @@
     }
     
     .about-grid,
-    .team-grid,
+    .team-groups,
     .partners-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -934,7 +816,6 @@
     
     .about-card,
     .tool-card,
-    .team-card,
     .partner-card {
         padding: 2rem 1.5rem;
     }
@@ -966,16 +847,11 @@
         font-size: 1rem;
     }
     
-    .tool-icon,
-    .team-avatar {
+    .tool-icon {
         width: 80px;
         height: 80px;
     }
-    
-    .team-avatar i {
-        font-size: 3rem;
-    }
-    
+
     .cta-title {
         font-size: 1.8rem;
     }
@@ -1009,356 +885,125 @@
 
 
 
-/* ===================================
-   Modern Team Table - Enhanced Styles
-   =================================== */
 
+
+/* ===================================
+   Team Section — grouped by institution
+   =================================== */
 .section-team {
     padding: 6rem 0;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    position: relative;
 }
 
-.team-table-container {
-    max-width: 1400px;
-    margin: 0 auto;
+.team-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto 3rem;
 }
 
-/* ===================================
-   Filter Pills
-   =================================== */
-.team-filters {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.filter-pill {
-    padding: 0.75rem 1.5rem;
-    border-radius: 50px;
-    border: 2px solid #e9ecef;
+.team-group {
     background: #ffffff;
-    color: #6c757d;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.filter-pill i {
-    font-size: 1rem;
-}
-
-.filter-pill:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    border-color: #84c8e5;
-}
-
-.filter-pill.active {
-    background: linear-gradient(135deg, #3498db 0%, #1abc9c 100%);
-    color: #ffffff;
-    border-color: transparent;
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
-}
-
-/* ===================================
-   Table Wrapper
-   =================================== */
-.team-table-wrapper {
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 0;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    margin-bottom: 2rem;
 }
 
-.team-table-modern {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 900px;
-}
-
-/* ===================================
-   Table Header
-   =================================== */
-.team-table-modern thead {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    position: relative;
-}
-
-.team-table-modern thead::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #3498db 0%, #1abc9c 100%);
-}
-
-.team-table-modern thead th {
-    padding: 1.8rem 2rem;
-    text-align: left;
-    font-weight: 700;
-    color: #ffffff;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.85rem;
-    border: none;
-}
-
-.th-content {
+.team-group-header {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 0.75rem;
+    padding: 1.5rem 1.75rem;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: #ffffff;
 }
 
-.th-content i {
-    font-size: 1.1rem;
-    opacity: 0.9;
+.team-group-header i {
+    font-size: 1.15rem;
 }
 
-/* ===================================
-   Table Body
-   =================================== */
-.team-table-modern tbody tr {
+.team-group-makerere .team-group-header i {
+    color: #84c8e5;
+}
+
+.team-group-uegcl .team-group-header i {
+    color: #f39c12;
+}
+
+.team-group-other .team-group-header i {
+    color: #95a5a6;
+}
+
+.team-group-title {
+    flex: 1;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.team-group-count {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.25rem 0.7rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.team-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+.team-member {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.75rem;
     border-bottom: 1px solid #f1f3f5;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 1;
+    transition: background-color 0.2s ease;
 }
 
-.team-table-modern tbody tr.visible {
-    animation: slideIn 0.4s ease forwards;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.team-table-modern tbody tr:last-child {
+.team-member:last-child {
     border-bottom: none;
 }
 
-.team-table-modern tbody tr:hover {
-    background: linear-gradient(90deg, rgba(132, 200, 229, 0.08) 0%, rgba(90, 159, 184, 0.05) 100%);
-    transform: scale(1.01);
-    box-shadow: inset 4px 0 0 #3498db;
+.team-member:hover {
+    background-color: #f8f9fa;
 }
 
-.team-table-modern tbody td {
-    padding: 2rem 2rem;
-    vertical-align: middle;
-    border: none;
-}
-
-/* ===================================
-   Member Cell
-   =================================== */
-.member-cell {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.member-avatar {
-    position: relative;
+.member-monogram {
     flex-shrink: 0;
-}
-
-.avatar-circle {
-    width: 65px;
-    height: 65px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #84c8e5 0%, #5a9fb8 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    z-index: 2;
-    transition: all 0.4s ease;
-}
-
-.avatar-circle i {
-    font-size: 2rem;
     color: #ffffff;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
 }
 
-.avatar-ring {
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    background: linear-gradient(135deg, #3498db, #1abc9c) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: all 0.4s ease;
-    z-index: 1;
+.team-group-makerere .member-monogram {
+    background: linear-gradient(135deg, #3498db 0%, #1abc9c 100%);
 }
 
-.team-table-modern tbody tr:hover .avatar-circle {
-    transform: scale(1.1) rotate(5deg);
+.team-group-uegcl .member-monogram {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
 }
 
-.team-table-modern tbody tr:hover .avatar-ring {
-    opacity: 1;
-    transform: rotate(180deg);
-}
-
-.member-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+.team-group-other .member-monogram {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
 }
 
 .member-name {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #2c3e50;
-    line-height: 1.3;
-    display: block;
-}
-
-.member-title {
-    font-size: 0.9rem;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-/* ===================================
-   Role Cell
-   =================================== */
-.role-cell {
-    display: flex;
-    align-items: center;
-}
-
-.role-badge-modern {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.7rem 1.3rem;
-    border-radius: 50px;
-    font-size: 0.9rem;
+    font-size: 0.98rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.role-badge-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    transition: left 0.4s ease;
-}
-
-.role-badge-modern:hover::before {
-    left: 100%;
-}
-
-.role-badge-modern i {
-    font-size: 0.95rem;
-}
-
-.role-primary {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    color: #ffffff;
-}
-
-.role-secondary {
-    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-    color: #ffffff;
-}
-
-.role-success {
-    background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
-    color: #ffffff;
-}
-
-.role-info {
-    background: linear-gradient(135deg, #5dade2 0%, #3498db 100%);
-    color: #ffffff;
-}
-
-.role-warning {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    color: #ffffff;
-}
-
-/* ===================================
-   Institution Cell
-   =================================== */
-.institution-cell {
-    display: flex;
-    align-items: center;
-}
-
-.institution-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.8rem 1.5rem;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.institution-badge i {
-    font-size: 1.2rem;
-}
-
-.badge-makerere {
-    background: linear-gradient(135deg, rgba(132, 200, 229, 0.15) 0%, rgba(90, 159, 184, 0.15) 100%);
     color: #2c3e50;
-    border: 2px solid rgba(132, 200, 229, 0.3);
-}
-
-.badge-makerere:hover {
-    background: linear-gradient(135deg, rgba(132, 200, 229, 0.25) 0%, rgba(90, 159, 184, 0.25) 100%);
-    border-color: #84c8e5;
-    transform: translateX(5px);
-}
-
-.badge-uegcl {
-    background: linear-gradient(135deg, rgba(243, 156, 18, 0.15) 0%, rgba(230, 126, 34, 0.15) 100%);
-    color: #2c3e50;
-    border: 2px solid rgba(243, 156, 18, 0.3);
-}
-
-.badge-uegcl:hover {
-    background: linear-gradient(135deg, rgba(243, 156, 18, 0.25) 0%, rgba(230, 126, 34, 0.25) 100%);
-    border-color: #f39c12;
-    transform: translateX(5px);
+    line-height: 1.4;
 }
 
 /* ===================================
@@ -1373,6 +1018,8 @@
     background: #ffffff;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .team-stats-bar .stat-item-inline {
@@ -1406,181 +1053,36 @@
 }
 
 /* ===================================
-   Responsive Design
+   Team Section — Responsive
    =================================== */
-
-/* Tablets */
-@media (max-width: 1024px) {
-    .team-table-wrapper {
-        overflow-x: auto;
-        border-radius: 20px;
-    }
-    
-    .team-table-modern tbody td {
-        padding: 1.5rem 1.5rem;
-    }
-    
-    .team-table-modern thead th {
-        padding: 1.5rem 1.5rem;
-    }
-}
-
-/* Mobile */
 @media (max-width: 768px) {
     .section-team {
         padding: 3rem 0;
     }
-    
-    .team-filters {
-        gap: 0.8rem;
+
+    .team-groups {
+        gap: 1.5rem;
         margin-bottom: 2rem;
     }
-    
-    .filter-pill {
-        font-size: 0.85rem;
-        padding: 0.6rem 1.2rem;
+
+    .team-member {
+        padding: 0.85rem 1.25rem;
     }
-    
-    .team-table-wrapper {
-        border-radius: 16px;
-        padding: 1rem;
-    }
-    
-    /* Stack table into cards */
-    .team-table-modern,
-    .team-table-modern thead,
-    .team-table-modern tbody,
-    .team-table-modern thead th,
-    .team-table-modern tbody tr,
-    .team-table-modern tbody td {
-        display: block;
-        width: 100%;
-    }
-    
-    .team-table-modern thead {
-        display: none;
-    }
-    
-    .team-table-modern tbody tr {
-        margin-bottom: 2rem;
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        border: 2px solid #f8f9fa;
-    }
-    
-    .team-table-modern tbody tr:hover {
-        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
-        transform: scale(1);
-    }
-    
-    .team-table-modern tbody td {
-        padding: 1rem 0;
-        border: none;
-    }
-    
-    .team-table-modern tbody td:first-child {
-        padding-bottom: 1.5rem;
-        margin-bottom: 1.5rem;
-        border-bottom: 2px solid #f1f3f5;
-    }
-    
-    .team-table-modern tbody td:nth-child(2),
-    .team-table-modern tbody td:nth-child(3) {
-        padding-bottom: 1rem;
-    }
-    
-    /* Add labels */
-    .role-cell::before,
-    .institution-cell::before {
-        content: attr(data-label);
-        display: block;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 0.8rem;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .role-cell::before {
-        content: 'Role:';
-    }
-    
-    .institution-cell::before {
-        content: 'Institution:';
-    }
-    
-    .member-cell {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-    }
-    
-    .member-details {
-        align-items: center;
-    }
-    
-    .avatar-circle {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .avatar-circle i {
-        font-size: 2.5rem;
-    }
-    
-    .role-badge-modern,
-    .institution-badge {
-        width: 100%;
-        justify-content: center;
-    }
-    
+
     .team-stats-bar {
         flex-direction: column;
         gap: 1.5rem;
         padding: 1.5rem;
     }
-    
-    .stat-divider {
+
+    .team-stats-bar .stat-divider {
         width: 80%;
         height: 2px;
         background: linear-gradient(90deg, transparent 0%, #e9ecef 50%, transparent 100%);
     }
-    
-    .stat-item-inline {
+
+    .team-stats-bar .stat-item-inline {
         width: 100%;
         justify-content: center;
-    }
-}
-
-/* Small Mobile */
-@media (max-width: 480px) {
-    .filter-pill {
-        font-size: 0.8rem;
-        padding: 0.5rem 1rem;
-    }
-    
-    .filter-pill i {
-        font-size: 0.9rem;
-    }
-    
-    .member-name {
-        font-size: 1.05rem;
-    }
-    
-    .role-badge-modern {
-        font-size: 0.8rem;
-        padding: 0.6rem 1rem;
-    }
-    
-    .institution-badge {
-        font-size: 0.9rem;
-        padding: 0.7rem 1.2rem;
-    }
-    
-    .stat-number {
-        font-size: 1.8rem;
     }
 }

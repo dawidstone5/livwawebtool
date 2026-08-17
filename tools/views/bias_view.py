@@ -1,9 +1,13 @@
+import logging
 import pandas as pd, numpy as np
 from django.shortcuts import render
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 import base64
 from io import BytesIO
 import matplotlib.pyplot as plt
+
+logger = logging.getLogger(__name__)
 
 # =================================================================================================================
 
@@ -138,6 +142,7 @@ def generate_plot(observed_data, corrected_data, remote_data):
 
 # CREATE VIEWS HERE.
 # _____________________________________________________________________________________________________________BIAS_VIEW____
+@login_required
 def bias(request):
     context = {}
 
@@ -237,12 +242,14 @@ def bias(request):
 
                  messages.success(request, f"{correction_method_name} Bias Correction Processed Successfully!") # Success message
             except Exception as e:
-                 messages.error(request, f"Error calculating metrics: {e}")
+                 logger.exception("Bias correction: error calculating metrics")
+                 messages.error(request, "Error calculating metrics from the provided data.")
 
         except ValueError as e:
             messages.error(request, f"Error processing files: {e}")
         except Exception as e:
-            messages.error(request, f"An unexpected processing error occurred. Please check your data or contact support. Error: {e}")
+            logger.exception("Bias correction: unexpected processing error")
+            messages.error(request, "An unexpected processing error occurred. Please check your data or contact support.")
 
         return render(request, 'tools/bias_correction.html', context)
 

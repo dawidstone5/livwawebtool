@@ -101,7 +101,7 @@
   {% endif %}
 
   <div class="row g-4 mb-4">
-    <div class="col-lg-4 col-md-6">
+    <div class="col-12">
       <div class="dashboard-card">
         <div class="card-header"><i class="fas fa-sync-alt"></i> Last Update</div>
         <div class="card-body">
@@ -122,52 +122,6 @@
         </div>
       </div>
     </div>
-
-    <div class="col-lg-4 col-md-6">
-      <div class="dashboard-card">
-          <div class="card-header"><i class="fas fa-check-circle"></i> Prediction Confidence</div>
-          <div class="card-body">
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-title">Current</div>
-                    <div class="metric-value">87%</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">7-Day Avg</div>
-                    <div class="metric-value">85%</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Trend</div>
-                    <div class="status status-good">Stable</div>
-                </div>
-            </div>
-          </div>
-      </div>
-    </div>
-
-    {% if metrics_trained %}
-    <div class="col-lg-4 col-md-12">
-        <div class="dashboard-card">
-            <div class="card-header"><i class="fas fa-crosshairs"></i> Prediction Accuracy (Trained Model)</div>
-            <div class="card-body">
-              <div class="metrics-grid">
-                  <div class="metric-card">
-                      <div class="metric-title">RMSE</div>
-                      <div class="metric-value">{{ metrics_trained.rmse|floatformat:2 }}m</div>
-                  </div>
-                  <div class="metric-card">
-                      <div class="metric-title">MAE</div>
-                      <div class="metric-value">{{ metrics_trained.mae|floatformat:2 }}m</div>
-                  </div>
-                  <div class="metric-card">
-                      <div class="metric-title">R²</div>
-                      <div class="metric-value">{{ metrics_trained.r2|floatformat:2 }}</div>
-                  </div>
-              </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
   </div>
 
   <div class="row g-4 mb-4">
@@ -205,7 +159,7 @@
   </div>
 
   <div class="row g-4">
-    <div class="col-lg-3 col-md-6">
+    <div class="col-md-6 mx-auto">
         <div class="dashboard-card">
             <div class="card-header"><i class="fas fa-sliders-h"></i> Prediction Controls</div>
             <div class="card-body">
@@ -225,20 +179,6 @@
                 </form>
             </div>
         </div>
-    </div>
-
-    <div class="col-lg-3 col-md-6">
-      <div class="dashboard-card">
-          <div class="card-header"><i class="fas fa-exclamation-triangle"></i> Anomaly Detection</div>
-          <div class="card-body">
-              <div class="metrics-grid">
-                  <div class="metric-card"><div class="metric-title">Current Status</div><div class="status status-good">Normal</div></div>
-                  <div class="metric-card"><div class="metric-title">Last Anomaly</div><div class="metric-value">28 Mar</div></div>
-                  <div class="metric-card"><div class="metric-title">Detection Rate</div><div class="metric-value">96.3%</div></div>
-                  <div class="metric-card"><div class="metric-title">False Alarms</div><div class="metric-value">2.1%</div></div>
-              </div>
-          </div>
-      </div>
     </div>
   </div>
 </div>

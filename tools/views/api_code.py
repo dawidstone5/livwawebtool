@@ -1,9 +1,12 @@
+import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, serializers
 import pickle
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 # Serializer for input data
@@ -171,8 +174,9 @@ class ForecastLakeLevelsView(APIView):
                 if "Lake_Level" in r and hasattr(r["Lake_Level"], "item"):
                     r["Lake_Level"] = r["Lake_Level"].item()
             return Response({"forecast": results}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception:
+            logger.exception("Forecast generation failed")
+            return Response({"error": "Forecast generation failed."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class HealthCheckView(APIView):
     def get(self, request):
