@@ -275,6 +275,21 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', debouncedScrollHandler);
 
     // ===================================
+    // Team Card Tap-to-Select (touch devices don't fire :hover)
+    // ===================================
+    document.querySelectorAll('.team-card').forEach(card => {
+        card.addEventListener('click', function () {
+            const wasSelected = this.classList.contains('is-selected');
+            document.querySelectorAll('.team-card.is-selected').forEach(other => {
+                other.classList.remove('is-selected');
+            });
+            if (!wasSelected) {
+                this.classList.add('is-selected');
+            }
+        });
+    });
+
+    // ===================================
     // Print Console Welcome Message
     // ===================================
     console.log('%c🌊 LIVWA - Lake Victoria Advanced Water Management', 

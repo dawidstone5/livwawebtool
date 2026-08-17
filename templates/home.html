@@ -5,6 +5,9 @@
 {% block title %}Dashboard - LIVWA{% endblock title %}
 
 {% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 <script src="{% static 'js/home.js' %}"></script>
 {% endblock extra_head %}
@@ -171,7 +174,7 @@
         </div>
     </section>
 
-    <!-- Team Section - grouped by institution -->
+    <!-- Team Section - editorial roster -->
     <section id="team" class="section-team">
         <div class="container">
             <div class="section-header" data-aos="fade-up">
@@ -179,75 +182,46 @@
                 <p class="section-subtitle">Dedicated experts from <a href="https://mak.ac.ug/" target="_blank">Makerere University</a> and <a href="https://www.uegcl.com/" target="_blank">UEGCL</a> working together to revolutionize water management on Lake Victoria</p>
             </div>
 
-            <div class="team-groups" data-aos="fade-up" data-aos-delay="100">
-                <div class="team-group team-group-makerere">
-                    <div class="team-group-header">
-                        <i class="fas fa-university"></i>
-                        <span class="team-group-title">Makerere University</span>
-                        <span class="team-group-count">5</span>
-                    </div>
-                    <ul class="team-list">
-                        <li class="team-member">
-                            <span class="member-monogram">HA</span>
-                            <span class="member-name">Prof. Dr. Eng. Henry M. Alinaitwe</span>
-                        </li>
-                        <li class="team-member">
-                            <span class="member-monogram">MT</span>
-                            <span class="member-name">Mr. Martin Tumutungire</span>
-                        </li>
-                        <li class="team-member">
-                            <span class="member-monogram">RE</span>
-                            <span class="member-name">Dr. Ronald Ekyalimpa</span>
-                        </li>
-                        <li class="team-member">
-                            <span class="member-monogram">EO</span>
-                            <span class="member-name">Mr. Emmanuel Okello</span>
-                        </li>
-                        <li class="team-member">
-                            <span class="member-monogram">DK</span>
-                            <span class="member-name">Mr. David Kasumba</span>
-                        </li>
-                    </ul>
+            <div class="team-roster" data-aos="fade-up" data-aos-delay="100">
+                <div class="team-card team-card-makerere">
+                    <p class="team-card-name">Prof. Dr. Eng. Henry M. Alinaitwe</p>
+                    <p class="team-card-affiliation">Makerere University</p>
                 </div>
-
-                <div class="team-group team-group-uegcl">
-                    <div class="team-group-header">
-                        <i class="fas fa-bolt"></i>
-                        <span class="team-group-title">UEGCL</span>
-                        <span class="team-group-count">4</span>
-                    </div>
-                    <ul class="team-list">
-                        <li class="team-member">
-                            <span class="member-monogram">KM</span>
-                            <span class="member-name">Dr. Kayondo Muzafalu</span>
-                        </li>
-                        <li class="team-member">
-                            <span class="member-monogram">MM</span>
-                            <span class="member-name">Eng. Musa Mukulu</span>
-                        </li>
-                        <li class="team-member">
-                            <span class="member-monogram">MA</span>
-                            <span class="member-name">Eng. Dr. Mary Akurut</span>
-                        </li>
-                        <li class="team-member">
-                            <span class="member-monogram">AK</span>
-                            <span class="member-name">Mr. Allan Kasedde</span>
-                        </li>
-                    </ul>
+                <div class="team-card team-card-makerere">
+                    <p class="team-card-name">Mr. Martin Tumutungire</p>
+                    <p class="team-card-affiliation">Makerere University</p>
                 </div>
-
-                <div class="team-group team-group-other">
-                    <div class="team-group-header">
-                        <i class="fas fa-user-friends"></i>
-                        <span class="team-group-title">Other Contributors</span>
-                        <span class="team-group-count">1</span>
-                    </div>
-                    <ul class="team-list">
-                        <li class="team-member">
-                            <span class="member-monogram">JS</span>
-                            <span class="member-name">Eng. Dr. Jotham I. Sempewo</span>
-                        </li>
-                    </ul>
+                <div class="team-card team-card-makerere">
+                    <p class="team-card-name">Dr. Ronald Ekyalimpa</p>
+                    <p class="team-card-affiliation">Makerere University</p>
+                </div>
+                <div class="team-card team-card-uegcl">
+                    <p class="team-card-name">Dr. Kayondo Muzafalu</p>
+                    <p class="team-card-affiliation">UEGCL</p>
+                </div>
+                <div class="team-card team-card-uegcl">
+                    <p class="team-card-name">Eng. Musa Mukulu</p>
+                    <p class="team-card-affiliation">UEGCL</p>
+                </div>
+                <div class="team-card team-card-uegcl">
+                    <p class="team-card-name">Eng. Dr. Mary Akurut</p>
+                    <p class="team-card-affiliation">UEGCL</p>
+                </div>
+                <div class="team-card team-card-other">
+                    <p class="team-card-name">Eng. Dr. Jotham I. Sempewo</p>
+                    <p class="team-card-affiliation">Contributing Researcher</p>
+                </div>
+                <div class="team-card team-card-uegcl">
+                    <p class="team-card-name">Mr. Allan Kasedde</p>
+                    <p class="team-card-affiliation">UEGCL</p>
+                </div>
+                <div class="team-card team-card-makerere">
+                    <p class="team-card-name">Mr. Emmanuel Okello</p>
+                    <p class="team-card-affiliation">Makerere University</p>
+                </div>
+                <div class="team-card team-card-makerere">
+                    <p class="team-card-name">Mr. David Kasumba</p>
+                    <p class="team-card-affiliation">Makerere University</p>
                 </div>
             </div>
 

@@ -778,7 +778,7 @@
     }
     
     .about-grid,
-    .team-groups,
+    .team-roster,
     .partners-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -886,139 +886,102 @@
 
 
 
-
 /* ===================================
-   Team Section — grouped by institution
+   Team Section — editorial roster
+   Deliberately flat: no shadow-lift, no icon avatars.
+   A serif carries the names; a thin institution-colored
+   rule is the only accent, echoing an author/affiliation
+   byline rather than a generic "meet the team" grid.
    =================================== */
 .section-team {
     padding: 6rem 0;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
-.team-groups {
+.section-team .section-title {
+    font-family: "Source Serif 4", Georgia, serif;
+}
+
+.team-roster {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1000px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
     margin: 0 auto 3rem;
 }
 
-.team-group {
+.team-card {
     background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
+    border: 1px solid #e9ecef;
+    border-left: 3px solid #cbd5da;
+    border-radius: 6px;
+    padding: 1.6rem 1.75rem;
+    transition: border-color 0.2s ease, border-left-width 0.2s ease;
 }
 
-.team-group-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1.5rem 1.75rem;
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    color: #ffffff;
+.team-card:hover,
+.team-card.is-selected {
+    border-left-width: 5px;
 }
 
-.team-group-header i {
+.team-card:hover .team-card-name,
+.team-card:focus-within .team-card-name,
+.team-card.is-selected .team-card-name {
+    font-weight: 700;
+}
+
+.team-card:hover .team-card-affiliation,
+.team-card:focus-within .team-card-affiliation,
+.team-card.is-selected .team-card-affiliation {
+    font-style: italic;
+}
+
+.team-card-makerere {
+    border-left-color: #3498db;
+}
+
+.team-card-uegcl {
+    border-left-color: #f39c12;
+}
+
+.team-card-other {
+    border-left-color: #95a5a6;
+}
+
+.team-card-name {
+    font-family: "Source Serif 4", Georgia, serif;
     font-size: 1.15rem;
-}
-
-.team-group-makerere .team-group-header i {
-    color: #84c8e5;
-}
-
-.team-group-uegcl .team-group-header i {
-    color: #f39c12;
-}
-
-.team-group-other .team-group-header i {
-    color: #95a5a6;
-}
-
-.team-group-title {
-    flex: 1;
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-}
-
-.team-group-count {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 0.25rem 0.7rem;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.team-list {
-    list-style: none;
-    margin: 0;
-    padding: 0.5rem 0;
-}
-
-.team-member {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.9rem 1.75rem;
-    border-bottom: 1px solid #f1f3f5;
-    transition: background-color 0.2s ease;
-}
-
-.team-member:last-child {
-    border-bottom: none;
-}
-
-.team-member:hover {
-    background-color: #f8f9fa;
-}
-
-.member-monogram {
-    flex-shrink: 0;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-}
-
-.team-group-makerere .member-monogram {
-    background: linear-gradient(135deg, #3498db 0%, #1abc9c 100%);
-}
-
-.team-group-uegcl .member-monogram {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-}
-
-.team-group-other .member-monogram {
-    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-}
-
-.member-name {
-    font-size: 0.98rem;
-    font-weight: 600;
+    font-weight: 500;
     color: #2c3e50;
-    line-height: 1.4;
+    line-height: 1.35;
+    margin: 0 0 0.6rem;
+}
+
+.team-card-affiliation {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #6c757d;
+}
+
+.team-card-affiliation::before {
+    content: '— ';
 }
 
 /* ===================================
-   Team Stats Bar
+   Team Stats Bar — flat, matches the roster
    =================================== */
 .team-stats-bar {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 2rem;
-    padding: 2rem;
+    padding: 1.75rem 2rem;
     background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    max-width: 1000px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -1029,27 +992,28 @@
 }
 
 .team-stats-bar .stat-item-inline i {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: #3498db;
 }
 
 .team-stats-bar .stat-number {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #34495e;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2c3e50;
     line-height: 1;
 }
 
 .team-stats-bar .stat-label {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #6c757d;
     font-weight: 500;
 }
 
 .team-stats-bar .stat-divider {
-    width: 2px;
-    height: 40px;
-    background: linear-gradient(180deg, transparent 0%, #e9ecef 50%, transparent 100%);
+    width: 1px;
+    height: 36px;
+    background: #e9ecef;
 }
 
 /* ===================================
@@ -1060,25 +1024,24 @@
         padding: 3rem 0;
     }
 
-    .team-groups {
-        gap: 1.5rem;
+    .team-roster {
+        gap: 1rem;
         margin-bottom: 2rem;
     }
 
-    .team-member {
-        padding: 0.85rem 1.25rem;
+    .team-card {
+        padding: 1.25rem 1.5rem;
     }
 
     .team-stats-bar {
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1.25rem;
         padding: 1.5rem;
     }
 
     .team-stats-bar .stat-divider {
-        width: 80%;
-        height: 2px;
-        background: linear-gradient(90deg, transparent 0%, #e9ecef 50%, transparent 100%);
+        width: 60%;
+        height: 1px;
     }
 
     .team-stats-bar .stat-item-inline {
