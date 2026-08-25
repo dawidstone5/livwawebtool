@@ -145,6 +145,15 @@ def levels(request):
                     "reference_end_date": end_date,
                 })
                 messages.success(request, f"Water level prediction generated successfully for {start_date.strftime('%B %Y')} to {end_date.strftime('%B %Y')}.")
+
+                # Stash a summary for the Reports tool to pull real data from
+                request.session['last_levels_result'] = {
+                    'start_date': start_date.strftime('%Y-%m-%d'),
+                    'end_date': end_date.strftime('%Y-%m-%d'),
+                    'min_level': float(df['water_levels'].min()),
+                    'max_level': float(df['water_levels'].max()),
+                    'mean_level': float(df['water_levels'].mean()),
+                }
             else:
                 messages.error(request, "Failed to generate the prediction chart. Please try again.")
                 context['error_message'] = "Could not generate the results plot."

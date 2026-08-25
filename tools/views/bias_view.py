@@ -262,6 +262,14 @@ def bias(request):
                  context['nse_percentage_diff'] = calculate_percentage_diff(metrics_before.get('NSE'), metrics_after.get('NSE'))
                  context['kge_percentage_diff'] = calculate_percentage_diff(metrics_before.get('KGE'), metrics_after.get('KGE'))
 
+                 # Stash a summary for the Reports tool to pull real data from
+                 request.session['last_bias_result'] = {
+                     'method': correction_method_name,
+                     'variable': variable_to_correct,
+                     'metrics_before': _serializable_metrics(metrics_before),
+                     'metrics_after': _serializable_metrics(metrics_after),
+                 }
+
                  messages.success(request, f"{correction_method_name} Bias Correction Processed Successfully!") # Success message
             except Exception as e:
                  logger.exception("Bias correction: error calculating metrics")

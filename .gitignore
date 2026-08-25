@@ -149,6 +149,10 @@ ltex.dictionary*
 
 # Debugging screenshots dropped in for review, not app source
 /error/
+
+# Runtime data — DB backups and cron/app logs, not source
+/backups/
+/logs/
 # 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 PROTECT US 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28
 
 

@@ -68,7 +68,7 @@ def activate(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        login(request, user)
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(request, 'Your account has been activated successfully!')
         return redirect('home')
     else:
@@ -126,7 +126,7 @@ def profile_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('profile')
+            return redirect('accounts:profile')
     else:
         form = UserProfileForm(instance=request.user)
     

@@ -40,7 +40,8 @@ def forecast(start, end, training_data, horizon=120):
         raise ValueError("Training data is not loaded.")
     start_date = pd.Timestamp(year=start['year'], month=start['month'], day=start['day'])
     end_date = pd.Timestamp(year=end['year'], month=end['month'], day=end['day'])
-    assert end_date > start_date, "End Date should be greater than Start Date"
+    if end_date <= start_date:
+        raise ValueError("End date must be after start date.")
 
     training_data = training_data.sort_values('Date')
     max_date_train = training_data['Date'].max()
@@ -174,6 +175,8 @@ class ForecastLakeLevelsView(APIView):
                 if "Lake_Level" in r and hasattr(r["Lake_Level"], "item"):
                     r["Lake_Level"] = r["Lake_Level"].item()
             return Response({"forecast": results}, status=status.HTTP_200_OK)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception:
             logger.exception("Forecast generation failed")
             return Response({"error": "Forecast generation failed."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
