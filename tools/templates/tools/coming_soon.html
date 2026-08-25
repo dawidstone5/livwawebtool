@@ -1,0 +1,27 @@
+{% extends template_name %}
+
+{% load static %}
+{% block title %}{{ label }} - Coming Soon - LIVWA{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 55vh;">
+    <div class="dashboard-card w-100" style="max-width: 560px;">
+      <div class="card-body text-center">
+        <div class="icon-wrapper">
+          <i class="fas {{ icon }}"></i>
+        </div>
+        <span class="status status-warning mb-3 d-inline-block">Coming Soon</span>
+        <h1 class="h3 card-title">{{ label }}</h1>
+        <p class="card-text text-muted">{{ description }}</p>
+        <p class="card-text text-muted">We're still building this one — check back soon, or explore what's already available.</p>
+        <div class="mt-4">
+          <a href="{% url 'tools' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Tools
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,11 +1,14 @@
+import json
 import logging
+from io import BytesIO
+
 import pandas as pd, numpy as np
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-import base64
-from io import BytesIO
-import matplotlib.pyplot as plt
+from django.http import HttpResponse, HttpResponseNotAllowed
+import plotly.graph_objects as go
+from reportlab.pdfgen import canvas as pdf_canvas
 
 logger = logging.getLogger(__name__)
 
@@ -104,37 +107,50 @@ def calculate_metrics(observed_data, modeled_data, reference_data=None):
     }
 
 def generate_plot(observed_data, corrected_data, remote_data):
-    print("Generating plot...")
+    """
+    Generate an interactive Plotly chart (as an embeddable HTML fragment) comparing
+    observed, original remote, and bias-corrected series. Zoom (scroll/box-select)
+    and pan are Plotly defaults.
+    """
     try:
-        fig, ax = plt.subplots(figsize=(10, 5))
-        # Assuming dataframes have a datetime index or a 'Date' column
-        # Adjust column selection as needed
         obs_col = observed_data.columns[-1]
         rem_col = remote_data.columns[-1]
         cor_col = corrected_data.columns[-1]
 
-        ax.plot(observed_data.index, observed_data[obs_col], label='Observed', color='#1d3557', alpha=0.8)
-        ax.plot(remote_data.index, remote_data[rem_col], label='Original Remote', color='#e63946', linestyle='--', alpha=0.7)
-        ax.plot(corrected_data.index, corrected_data[cor_col], label='Corrected', color='#1abc9c')
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=observed_data.index, y=observed_data[obs_col],
+            mode='lines', name='Observed',
+            line=dict(color='#1d3557'),
+        ))
+        fig.add_trace(go.Scatter(
+            x=remote_data.index, y=remote_data[rem_col],
+            mode='lines', name='Original Remote',
+            line=dict(color='#e63946', dash='dash'),
+        ))
+        fig.add_trace(go.Scatter(
+            x=corrected_data.index, y=corrected_data[cor_col],
+            mode='lines', name='Corrected',
+            line=dict(color='#1abc9c'),
+        ))
 
-        ax.set_xlabel("Date")
-        ax.set_ylabel("Value")
-        ax.set_title("Bias Correction Comparison")
-        ax.legend()
-        ax.grid(True, linestyle=':', alpha=0.6)
-        plt.tight_layout()
+        fig.update_layout(
+            title='Bias Correction Comparison',
+            xaxis_title='Date',
+            yaxis_title='Value',
+            template='plotly_white',
+            hovermode='x unified',
+            margin=dict(l=50, r=30, t=60, b=50),
+            height=450,
+        )
 
-        # Save plot to a bytes buffer
-        buf = BytesIO()
-        plt.savefig(buf, format='png')
-        plt.close(fig) # Close the figure to free memory
-        buf.seek(0)
-
-        # Encode bytes to base64 string
-        plot_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-        return plot_base64
-    except Exception as e:
-        print(f"Error generating plot: {e}")
+        return fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={'displaylogo': False, 'scrollZoom': True, 'responsive': True},
+        )
+    except Exception:
+        logger.exception("Error generating bias correction plot")
         return None
 
 # =================================================================================================================
@@ -209,9 +225,9 @@ def bias(request):
                  return render(request, 'tools/bias_correction.html', context)
 
             # Generate Plot
-            plot_data_base64 = generate_plot(observed_data, corrected_data, remote_data)
-            if plot_data_base64:
-                 context['plot_base64'] = plot_data_base64
+            plot_data_html = generate_plot(observed_data, corrected_data, remote_data)
+            if plot_data_html:
+                 context['plot_html'] = plot_data_html
             else:
                  messages.warning(request, "Could not generate the results plot.")
 
@@ -222,7 +238,13 @@ def bias(request):
                  metrics_after = calculate_metrics(observed_data, corrected_data)
                  context['metrics_before'] = metrics_before
                  context['metrics_after'] = metrics_after
-                 
+                 context['corrected_csv'] = corrected_data.to_csv()
+                 context['correction_method_name'] = correction_method_name
+                 context['metrics_json'] = json.dumps({
+                     'before': _serializable_metrics(metrics_before),
+                     'after': _serializable_metrics(metrics_after),
+                 })
+
                  # --- Calculate Percentage Differences ---
                  def calculate_percentage_diff(before, after):
                     if before is not None and after is not None and before != 0:
@@ -254,3 +276,74 @@ def bias(request):
         return render(request, 'tools/bias_correction.html', context)
 
     return render(request, 'tools/bias_correction.html', context)
+
+
+def _serializable_metrics(metrics):
+    """Convert numpy scalar metric values to plain JSON-safe floats."""
+    result = {}
+    for key, value in metrics.items():
+        try:
+            result[key] = float(value)
+        except (TypeError, ValueError):
+            result[key] = None
+    return result
+
+
+# ________________________________________________________________________________________________________EXPORT_VIEWS____
+@login_required
+def bias_export_csv(request):
+    """Download the corrected-data table produced by the last bias correction run."""
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    csv_data = request.POST.get('corrected_csv', '')
+    response = HttpResponse(csv_data, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="bias_corrected_data.csv"'
+    return response
+
+
+@login_required
+def bias_export_pdf(request):
+    """Generate a PDF summary (method + before/after metrics) of the last bias correction run."""
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    method_name = request.POST.get('correction_method_name', 'Bias Correction')
+    try:
+        metrics = json.loads(request.POST.get('metrics_json', '{}'))
+    except (json.JSONDecodeError, TypeError):
+        metrics = {}
+    before = metrics.get('before', {})
+    after = metrics.get('after', {})
+
+    buffer = BytesIO()
+    pdf = pdf_canvas.Canvas(buffer)
+
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(72, 780, "Bias Correction Report")
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(72, 758, f"Method: {method_name}")
+
+    y = 720
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(72, y, "Metric")
+    pdf.drawString(220, y, "Before")
+    pdf.drawString(320, y, "After")
+    y -= 8
+    pdf.line(72, y, 400, y)
+    y -= 18
+
+    pdf.setFont("Helvetica", 11)
+    for key in ['RMSE', 'MAE', 'Bias', 'Correlation', 'NSE', 'KGE']:
+        b = before.get(key)
+        a = after.get(key)
+        pdf.drawString(72, y, key)
+        pdf.drawString(220, y, f"{b:.3f}" if isinstance(b, (int, float)) else "-")
+        pdf.drawString(320, y, f"{a:.3f}" if isinstance(a, (int, float)) else "-")
+        y -= 20
+
+    pdf.save()
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="bias_correction_report.pdf"'
+    return response

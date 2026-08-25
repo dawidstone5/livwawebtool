@@ -3,6 +3,7 @@
 {% block title %}Water Level Prediction - LIVWA{% endblock title %}
 
 {% block extra_head %}
+<script src="{% static 'vendor/plotly/plotly.min.js' %}"></script>
 <style>
   .chart-container {
     min-height: 350px;
@@ -11,12 +12,14 @@
     align-items: center;
     background-color: #f8f9fa;
     position: relative;
-  }
-  
-  .chart-container img {
     max-width: 100%;
-    height: auto;
-    max-height: 350px;
+    overflow-x: auto;
+  }
+
+  .chart-container .js-plotly-plot,
+  .chart-container .plotly-graph-div {
+    width: 100% !important;
+    max-width: 100%;
   }
 
   /* Loading Spinner Styles */
@@ -140,9 +143,9 @@
                     </div>
 
                     <!-- Chart Content -->
-                    <div id="chartContent">
-                        {% if plot_base64 %}
-                            <img src="data:image/png;base64,{{ plot_base64 }}" alt="Water Level Prediction Chart" class="img-fluid">
+                    <div id="chartContent" class="w-100">
+                        {% if plot_html %}
+                            {{ plot_html|safe }}
                         {% else %}
                             <div class="d-flex justify-content-center align-items-center h-100">
                                 <div>
@@ -203,6 +206,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Optional: Hide the chart content while loading
         chartContent.style.opacity = '0.3';
     });
+
+    // Force Plotly to recompute its size against the actual container width.
+    // Fixes the chart occasionally rendering wider than its card on first paint.
+    function resizePlotlyCharts() {
+        document.querySelectorAll('.js-plotly-plot').forEach(function (gd) {
+            if (window.Plotly) { Plotly.Plots.resize(gd); }
+        });
+    }
+    window.addEventListener('load', resizePlotlyCharts);
+    window.addEventListener('resize', resizePlotlyCharts);
 });
 </script>
 {% endblock extra_scripts %}

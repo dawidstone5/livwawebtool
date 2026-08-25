@@ -85,7 +85,7 @@ def login_view(request):
         return redirect('home')
 
     if request.method == 'POST':
-        form = LoginForm(data=request.POST)
+        form = LoginForm(request=request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
@@ -103,7 +103,7 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password.')
     else:
-        form = LoginForm()
+        form = LoginForm(request=request)
 
     context['form'] = form
     return render(request, 'accounts/login.html', context)

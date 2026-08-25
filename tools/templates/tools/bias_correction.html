@@ -5,6 +5,7 @@
 {% block title %}Bias Correction - LIVWA{% endblock title %}
 
 {% block extra_head %}
+<script src="{% static 'vendor/plotly/plotly.min.js' %}"></script>
 {# specific styles for method cards if not already in style.css #}
 <link rel="stylesheet" href="{% static 'css/bias.css' %}">
 <script src="{% static 'js/bias.js' %}"></script>
@@ -128,15 +129,15 @@
       <!-- START === RESULTS SECTION BEFORE AND AFTER -->
       <div class="col-lg-7 col-xl-8">
         {# Placeholder/Results Area - Only show if context variables exist #}
-        {% if plot_base64 or metrics_before or metrics_after %}
+        {% if plot_html or metrics_before or metrics_after %}
         <div class="row g-2">
             <div class="card-header">
                 <i class="fas fa-chart-line me-2"></i> Bias Correction Results
             </div>
             <div class="card-body text-center"> {# Center chart if needed #}
-                <div class="chart-container mb-3" style="height: 350px; background-color: #fff;">
-                    {% if plot_base64 %}
-                        <img src="data:image/png;base64,{{ plot_base64 }}" alt="Bias Correction Chart" class="img-fluid" style="max-height: 350px;"/>
+                <div class="chart-container mb-3" style="min-height: 350px; background-color: #fff;">
+                    {% if plot_html %}
+                        <div class="w-100">{{ plot_html|safe }}</div>
                     {% else %}
                         <div class="d-flex justify-content-center align-items-center h-100">
                             <div>
@@ -241,10 +242,17 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    {# TODO: Add URLs or JS functions for these buttons #}
-                    <button type="button" class="btn btn-success"><i class="fas fa-file-csv me-1"></i> Download Corrected Data (CSV)</button>
-                    <button type="button" class="btn btn-danger"><i class="fas fa-file-pdf me-1"></i> Export Report (PDF)</button>
-                    <button type="button" class="btn btn-info text-white"><i class="fas fa-save me-1"></i> Save Configuration</button>
+                    <form method="POST" action="{% url 'bias-export-csv' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="corrected_csv" value="{{ corrected_csv }}">
+                        <button type="submit" class="btn btn-success"><i class="fas fa-file-csv me-1"></i> Download Corrected Data (CSV)</button>
+                    </form>
+                    <form method="POST" action="{% url 'bias-export-pdf' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="correction_method_name" value="{{ correction_method_name }}">
+                        <input type="hidden" name="metrics_json" value='{{ metrics_json }}'>
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-file-pdf me-1"></i> Export Report (PDF)</button>
+                    </form>
                 </div>
             </div> {# End card-body #}
         </div> {# End export card #}
@@ -264,6 +272,22 @@
     </div> {# End Main Row #}
   </form> {# End Form #}
   <!-- END === FORM INPUT FOR BIAS DATA COLLECTION AND CORRECTION -->
-   
+
 </div> {# End container #}
 {% endblock content %}
+
+{% block extra_scripts %}
+<script>
+// Force Plotly to recompute its size against the actual container width.
+// Fixes the chart occasionally rendering wider than its card on first paint.
+document.addEventListener('DOMContentLoaded', function () {
+    function resizePlotlyCharts() {
+        document.querySelectorAll('.js-plotly-plot').forEach(function (gd) {
+            if (window.Plotly) { Plotly.Plots.resize(gd); }
+        });
+    }
+    window.addEventListener('load', resizePlotlyCharts);
+    window.addEventListener('resize', resizePlotlyCharts);
+});
+</script>
+{% endblock extra_scripts %}

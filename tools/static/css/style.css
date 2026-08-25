@@ -45,85 +45,66 @@
     flex: 1; /* Ensure main content pushes footer down */
   }
   
-  /* --- Navbar Styles (from file1) --- */
+  /* --- Navbar Styles: flat instrument-panel bar, serif wordmark ---
+     Extends the editorial language from the team roster (hairline rules,
+     no gradients/icons) instead of another decorative gradient band. --- */
   .navbar {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    position: relative;
+    background: var(--primary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .navbar::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--secondary) 0%, var(--accent) 100%);
-  }
-  
   .navbar-brand img {
-    height: 40px;
+    height: 34px;
     margin-right: 10px;
   }
-  
+
   .navbar-brand span {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 1.2rem;
       font-weight: 600;
+      letter-spacing: 0.03em;
   }
-  
+
   .nav-link {
-    color: var(--white) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
     font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
     position: relative;
-    transition: all 0.3s ease;
+    transition: color 0.2s ease;
     padding-left: 0.8rem !important;
     padding-right: 0.8rem !important;
   }
-  
-  .nav-link .fa-fw { /* Fixed width icons */
-      width: 1.25em;
-  }
-  
+
   .nav-link.active::after,
-  .nav-item.show .nav-link::after { /* Add underline for active/open dropdown */
+  .nav-item.show .nav-link::after { /* Underline for active/open dropdown */
     content: '';
     position: absolute;
-    width: calc(100% - 1.6rem); /* Adjust width based on padding */
-    height: 3px;
+    width: calc(100% - 1.6rem);
+    height: 2px;
     background-color: var(--accent);
     bottom: 0;
-    left: 0.8rem; /* Match padding */
-    transition: all 0.3s ease;
-  }
-  
-  .nav-link:hover {
-    color: var(--accent) !important;
-  }
-  
-  .dropdown-menu {
-      border-radius: 0.5rem;
-      border: none;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-      padding: 0.5rem;
-      margin-top: 0.5rem !important;
-      position: relative;
-      overflow: hidden;
+    left: 0.8rem;
   }
 
-  .dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, var(--secondary) 0%, var(--accent) 100%);
+  .nav-link:hover {
+    color: #ffffff !important;
+  }
+
+  .dropdown-menu {
+      border-radius: 4px;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      padding: 0.4rem;
+      margin-top: 0.6rem !important;
+      border-top: 2px solid var(--accent);
   }
 
   .dropdown-item {
       padding: 0.6rem 1rem;
-      border-radius: 0.35rem;
+      border-radius: 3px;
       font-weight: 500;
+      font-size: 0.95rem;
   }
 
   .dropdown-item:hover {
@@ -274,6 +255,7 @@
   .chart-container {
     height: 300px;
     width: 100%;
+    max-width: 100%;
     background-color: var(--gray-100);
     display: flex;
     align-items: center;
@@ -281,6 +263,13 @@
     color: var(--gray-600);
     border-radius: 6px;
     border: 1px dashed var(--gray-200);
+    overflow-x: auto;
+  }
+
+  .chart-container .js-plotly-plot,
+  .chart-container .plotly-graph-div {
+    width: 100% !important;
+    max-width: 100%;
   }
   
   /* Status Badges */

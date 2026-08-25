@@ -137,12 +137,18 @@ db.sqlite3
 /models
 *.pkl
 
-/static
+/static/*
+# Self-hosted third-party assets (Bootstrap/FontAwesome/Plotly) — committed on
+# purpose so a fresh clone/deploy has them without depending on CDN reachability.
+!/static/vendor/
 /staticfiles
 
 /livwawebtool
 
 ltex.dictionary*
+
+# Debugging screenshots dropped in for review, not app source
+/error/
 # 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 PROTECT US 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28
 
 
@@ -155,6 +161,11 @@ celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
+
+# TLS private keys / certificates — never commit these
+/certs/
+*.key
+*.pem
 
 # Environments
 .env

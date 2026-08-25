@@ -1,21 +1,21 @@
 # import neccessary functions, libraries, and packages
+import logging
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-import base64
-from io import BytesIO
-import matplotlib
-matplotlib.use('Agg')  # Set backend before importing pyplot
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 from tools.views.api_code import forecast, training_data
+
+logger = logging.getLogger(__name__)
 
 
 # function for plotting the results
 def generate_plot(results_df, selected_variable):
     """
-    Generate a base64 encoded plot from the results dataframe
+    Generate an interactive Plotly chart (as an embeddable HTML fragment) from
+    the results dataframe. Zoom (scroll/box-select) and pan are Plotly defaults.
     """
     try:
         # Ensure the variable data is in the correct format
@@ -23,41 +23,32 @@ def generate_plot(results_df, selected_variable):
             lambda x: x[0] if isinstance(x, (list, np.ndarray)) and len(x) > 0 else x
         )
 
-        # Create the plot
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(
-            results_df.index, 
-            results_df[selected_variable], 
-            label='Water Levels', 
-            color='#1abc9c', 
-            linewidth=2,
-            alpha=0.8
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=results_df.index,
+            y=results_df[selected_variable],
+            mode='lines',
+            name='Water Levels',
+            line=dict(color='#1abc9c', width=2),
+        ))
+        fig.update_layout(
+            title='Predicted Water Levels over Time',
+            xaxis_title='Date',
+            yaxis_title='Water Level (m)',
+            template='plotly_white',
+            hovermode='x unified',
+            margin=dict(l=50, r=30, t=60, b=50),
+            height=450,
         )
-        
-        # Styling
-        ax.set_xlabel("Date", fontsize=12, fontweight='bold')
-        ax.set_ylabel("Water Level (m)", fontsize=12, fontweight='bold')
-        ax.set_title("Predicted Water Levels over Time", fontsize=14, fontweight='bold', pad=20)
-        ax.legend(loc='best', frameon=True, shadow=True)
-        ax.grid(True, linestyle=':', alpha=0.6, linewidth=0.5)
-        
-        # Rotate x-axis labels for better readability
-        plt.xticks(rotation=45, ha='right')
-        plt.tight_layout()
 
-        # Convert plot to base64
-        buf = BytesIO()
-        plt.savefig(buf, format='png', dpi=100, bbox_inches='tight')
-        plt.close(fig)
-        buf.seek(0)
-        plot_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-        
-        return plot_base64
-    
-    except Exception as e:
-        print(f"Error generating plot: {e}")
-        # Close any open figures to prevent memory leaks
-        plt.close('all')
+        return fig.to_html(
+            full_html=False,
+            include_plotlyjs=False,
+            config={'displaylogo': False, 'scrollZoom': True, 'responsive': True},
+        )
+
+    except Exception:
+        logger.exception("Error generating water level plot")
         return None
 
 
@@ -145,11 +136,11 @@ def levels(request):
                 return render(request, "tools/water_levels.html", context)
 
             # Generate plot
-            plot_base64 = generate_plot(df, 'water_levels')
-            
-            if plot_base64:
+            plot_html = generate_plot(df, 'water_levels')
+
+            if plot_html:
                 context.update({
-                    "plot_base64": plot_base64,
+                    "plot_html": plot_html,
                     "reference_start_date": start_date,
                     "reference_end_date": end_date,
                 })
