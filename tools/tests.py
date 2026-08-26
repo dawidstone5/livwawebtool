@@ -5,8 +5,9 @@ from unittest.mock import patch
 
 import pandas as pd
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from tools.models import ForecastResult
@@ -218,6 +219,45 @@ class ToolAccessTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse('bias'))
         self.assertEqual(response.status_code, 200)
+
+
+class SupportViewTests(TestCase):
+    def test_get_renders_form(self):
+        response = self.client.get(reverse('support'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context)
+
+    @override_settings(SUPPORT_EMAIL='support@example.com')
+    def test_valid_submission_sends_email_and_redirects(self):
+        response = self.client.post(reverse('support'), {
+            'name': 'Jane Doe',
+            'email': 'jane@example.com',
+            'message': 'Need help with the Levels tool.',
+        })
+        self.assertRedirects(response, reverse('support'))
+        self.assertEqual(len(mail.outbox), 1)
+        sent = mail.outbox[0]
+        self.assertEqual(sent.to, ['support@example.com'])
+        self.assertEqual(sent.reply_to, ['jane@example.com'])
+        self.assertIn('Jane Doe', sent.subject)
+
+    def test_invalid_submission_shows_errors_not_500(self):
+        response = self.client.post(reverse('support'), {
+            'name': '', 'email': 'not-an-email', 'message': '',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'].errors)
+        self.assertEqual(len(mail.outbox), 0)
+
+    @override_settings(SUPPORT_EMAIL='')
+    def test_unconfigured_support_email_does_not_500(self):
+        response = self.client.post(reverse('support'), {
+            'name': 'Jane Doe',
+            'email': 'jane@example.com',
+            'message': 'Need help.',
+        })
+        self.assertRedirects(response, reverse('support'))
+        self.assertEqual(len(mail.outbox), 0)
 
 
 class ComingSoonTests(TestCase):
