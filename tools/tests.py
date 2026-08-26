@@ -301,3 +301,44 @@ class BiasCorrectionTests(TestCase):
             'correction_method': 'linear_scaling',
         })
         self.assertEqual(response.status_code, 200)
+
+    def _csv_upload_with_dates(self, dates, values):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        rows = "\n".join(f"{d},{v}" for d, v in zip(dates, values))
+        content = f"date,value\n{rows}\n".encode()
+        return SimpleUploadedFile("data.csv", content, content_type="text/csv")
+
+    def test_corrected_data_keeps_modeled_dates_when_files_dont_align(self):
+        # Observed and remote-sensing files covering different calendar
+        # periods - a realistic case (independently collected datasets).
+        # The corrected series is a transform of the remote/modeled values,
+        # so it must carry THEIR dates, not the observed file's dates.
+        observed_dates = [f"2020-01-0{i+1}" for i in range(5)]
+        modeled_dates = [f"2020-03-0{i+1}" for i in range(5)]
+        response = self.client.post(reverse('bias'), {
+            'observations_file': self._csv_upload_with_dates(observed_dates, [10.1, 10.3, 10.5, 10.2, 10.6]),
+            'remote_sensing_file': self._csv_upload_with_dates(modeled_dates, [9.5, 9.7, 9.9, 9.6, 10.0]),
+            'variable_select': 'precipitation',
+            'correction_method': 'quantile_mapping',
+        })
+        self.assertEqual(response.status_code, 200)
+        corrected_csv = response.context['corrected_csv']
+        self.assertIn('2020-03-0', corrected_csv)
+        self.assertNotIn('2020-01-0', corrected_csv)
+
+    def test_trend_percentage_diffs_render_in_page(self):
+        # linear_scaling on this fixture reduces RMSE/MAE (observed and
+        # modeled differ by close to a constant scale factor), so the
+        # improvement indicators should show up, formatted, and colored
+        # as an improvement (trend-up) rather than being blank.
+        response = self.client.post(reverse('bias'), {
+            'observations_file': self._csv_upload([10.1, 10.3, 10.5, 10.2, 10.6]),
+            'remote_sensing_file': self._csv_upload([9.5, 9.7, 9.9, 9.6, 10.0]),
+            'variable_select': 'precipitation',
+            'correction_method': 'linear_scaling',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.context['rmse_percentage_diff'])
+        html = response.content.decode()
+        self.assertIn('trend-up', html)
+        self.assertNotIn('&mdash;', html)

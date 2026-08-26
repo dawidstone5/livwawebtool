@@ -21,7 +21,7 @@ def linear_scaling(observed, modeled):
     return corrected
 # ================================================================================================== linear scaling
 def quantile_mapping(observed, modeled):
-    idx = observed.index
+    idx = modeled.index
     observed = observed.to_numpy().flatten()
     modeled = modeled.to_numpy().flatten()
     sorted_observed = np.sort(observed)
@@ -31,7 +31,7 @@ def quantile_mapping(observed, modeled):
     return corrected
 # ================================================================================================ quantile mapping
 def delta_change(observed, modeled):
-    idx = observed.index
+    idx = modeled.index
     observed = observed.to_numpy().flatten()
     modeled = modeled.to_numpy().flatten()
     change_factor = observed[-1] - observed[0]
@@ -40,7 +40,7 @@ def delta_change(observed, modeled):
     return corrected
 # ==================================================================================================== delta change
 def empirical_quantile(observed, modeled):
-    idx = observed.index
+    idx = modeled.index
     observed = observed.to_numpy().flatten()
     modeled = modeled.to_numpy().flatten()
     percentiles = np.percentile(modeled, np.linspace(0, 100, len(observed)))
@@ -186,15 +186,30 @@ def bias(request):
 
         # Process files dynamically based on extension
         def read_file(file):
-            try:
-                if file.name.endswith('.csv'):
+            if file.name.endswith('.csv'):
+                try:
                     return pd.read_csv(file, parse_dates=True, index_col=0)
-                elif file.name.endswith(('.xlsx', '.xls')):
+                except Exception as e:
+                    raise ValueError(f"Error reading file '{file.name}': {e}. Ensure format is correct and first column is a parsable date.")
+            elif file.name.endswith(('.xlsx', '.xls')):
+                try:
                     return pd.read_excel(file, parse_dates=True, index_col=0)
-                else:
-                    raise ValueError("Unsupported file format.")
-            except Exception as e:
-                raise ValueError(f"Error reading file '{file.name}': {e}. Ensure format is correct and first column is a parsable date.")
+                except Exception as excel_error:
+                    # Common mistake: a CSV/text export saved with an Excel
+                    # extension. Pandas' own error here ("format cannot be
+                    # determined") doesn't hint at that, so retry as CSV
+                    # before giving up.
+                    try:
+                        file.seek(0)
+                        return pd.read_csv(file, parse_dates=True, index_col=0)
+                    except Exception:
+                        raise ValueError(
+                            f"Error reading file '{file.name}': {excel_error}. "
+                            "Ensure the file is a genuine Excel file (or save it as .csv instead), "
+                            "and that the first column is a parsable date."
+                        )
+            else:
+                raise ValueError(f"Unsupported file format for '{file.name}'.")
 
         try:
             observed_data = read_file(observations_file)

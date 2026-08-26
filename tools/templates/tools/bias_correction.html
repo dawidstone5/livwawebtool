@@ -170,10 +170,8 @@
                         <div class="metric-subtitle">Before</div>
                         <div class="metric-value metric-value-after">{{ metrics_after.RMSE|floatformat:2 }}</div>
                         <div class="metric-subtitle">After</div>
-                        <div class="metric-trend trend-down">
-                            <!-- <i class="fas fa-arrow-down"></i> -->
-                            {{ metrics_before.rmse_difference|floatformat:2 }}
-
+                        <div class="metric-trend {% if rmse_percentage_diff is not None %}{% if rmse_percentage_diff < 0 %}trend-up{% else %}trend-down{% endif %}{% endif %}">
+                            {% if rmse_percentage_diff is not None %}{{ rmse_percentage_diff|floatformat:1 }}%{% else %}&mdash;{% endif %}
                         </div>
                     </div>
                     <div class="metric-card">
@@ -182,9 +180,8 @@
                         <div class="metric-subtitle">Before</div>
                         <div class="metric-value metric-value-after">{{ metrics_after.MAE|floatformat:2 }}</div>
                         <div class="metric-subtitle">After</div>
-                        <div class="metric-trend trend-down">
-                            <!-- <i class="fas fa-arrow-down"></i> -->
-                            {{ metrics_before.mae_difference|floatformat:2 }}
+                        <div class="metric-trend {% if mae_percentage_diff is not None %}{% if mae_percentage_diff < 0 %}trend-up{% else %}trend-down{% endif %}{% endif %}">
+                            {% if mae_percentage_diff is not None %}{{ mae_percentage_diff|floatformat:1 }}%{% else %}&mdash;{% endif %}
                         </div>
                     </div>
                     <!-- <div class="metric-card">
@@ -204,9 +201,8 @@
                         <div class="metric-subtitle">Before</div>
                         <div class="metric-value metric-value-after">{{ metrics_after.Correlation|floatformat:2 }}</div>
                         <div class="metric-subtitle">After</div>
-                        <div class="metric-trend trend-down">
-                            <!-- <i class="fas fa-arrow-down"></i> -->
-                            {{ metrics_before.correlation_difference|floatformat:2 }}
+                        <div class="metric-trend {% if correlation_percentage_diff is not None %}{% if correlation_percentage_diff > 0 %}trend-up{% else %}trend-down{% endif %}{% endif %}">
+                            {% if correlation_percentage_diff is not None %}{{ correlation_percentage_diff|floatformat:1 }}%{% else %}&mdash;{% endif %}
                         </div>
                     </div>
                     <div class="metric-card">
@@ -215,9 +211,8 @@
                         <div class="metric-subtitle">Before</div>
                         <div class="metric-value metric-value-after">{{ metrics_after.NSE|floatformat:2 }}</div>
                         <div class="metric-subtitle">After</div>
-                        <div class="metric-trend trend-down">
-                            <!-- <i class="fas fa-arrow-down"></i> -->
-                            {{ metrics_before.nse_difference|floatformat:2 }}
+                        <div class="metric-trend {% if nse_percentage_diff is not None %}{% if nse_percentage_diff > 0 %}trend-up{% else %}trend-down{% endif %}{% endif %}">
+                            {% if nse_percentage_diff is not None %}{{ nse_percentage_diff|floatformat:1 }}%{% else %}&mdash;{% endif %}
                         </div>
                     </div>
                     <div class="metric-card">
@@ -226,9 +221,8 @@
                         <div class="metric-subtitle">Before</div>
                         <div class="metric-value metric-value-after">{{ metrics_after.KGE|floatformat:2 }}</div>
                         <div class="metric-subtitle">After</div>
-                        <div class="metric-trend trend-down">
-                            <!-- <i class="fas fa-arrow-down"></i> -->
-                            {{ metrics_before.kge_difference|floatformat:2 }}
+                        <div class="metric-trend {% if kge_percentage_diff is not None %}{% if kge_percentage_diff > 0 %}trend-up{% else %}trend-down{% endif %}{% endif %}">
+                            {% if kge_percentage_diff is not None %}{{ kge_percentage_diff|floatformat:1 }}%{% else %}&mdash;{% endif %}
                         </div>
                     </div>
                 </div> {# End metrics-grid #}
