@@ -302,6 +302,27 @@ class BiasCorrectionTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
 
+    def test_csv_content_mislabeled_as_xlsx_still_processes(self):
+        # Common real-world mistake: a CSV/text export saved with an
+        # Excel extension. pandas can't detect a real Excel format from
+        # the content, so we fall back to reading it as CSV instead of
+        # surfacing pandas' "format cannot be determined" error.
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        csv_bytes = b"date,value\n2020-01-01,10.1\n2020-01-02,10.3\n2020-01-03,10.5\n2020-01-04,10.2\n2020-01-05,10.6\n"
+        mislabeled = SimpleUploadedFile(
+            "obs.xlsx", csv_bytes,
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        response = self.client.post(reverse('bias'), {
+            'observations_file': mislabeled,
+            'remote_sensing_file': self._csv_upload([9.5, 9.7, 9.9, 9.6, 10.0]),
+            'variable_select': 'precipitation',
+            'correction_method': 'linear_scaling',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('metrics_after', response.context)
+        self.assertNotIn('format cannot be determined', response.content.decode())
+
     def _csv_upload_with_dates(self, dates, values):
         from django.core.files.uploadedfile import SimpleUploadedFile
         rows = "\n".join(f"{d},{v}" for d, v in zip(dates, values))
