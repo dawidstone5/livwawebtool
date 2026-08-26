@@ -1,10 +1,15 @@
+import io
 import json
+from unittest.mock import patch
 
+import pandas as pd
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
 from tools.models import ForecastResult
+from tools.views.api_code import training_data
 
 
 class HealthCheckTests(TestCase):
@@ -77,6 +82,73 @@ class ForecastCacheTests(TestCase):
         # Same request served from the cache: no second row, identical payload.
         self.assertEqual(ForecastResult.objects.count(), 1)
         self.assertEqual(first.json(), second.json())
+
+
+class PrecomputeForecastsCommandTests(TestCase):
+    def test_precompute_creates_one_row_per_segment(self):
+        call_command(
+            "precompute_forecasts",
+            "--start", "2022-08-01",
+            "--segments", "2",
+            stdout=io.StringIO(), stderr=io.StringIO(),
+        )
+        rows = list(ForecastResult.objects.order_by("start_date"))
+        self.assertEqual(len(rows), 2)
+        self.assertEqual((rows[0].start_date.isoformat(), rows[0].end_date.isoformat()),
+                          ("2022-08-01", "2022-11-01"))
+        self.assertEqual((rows[1].start_date.isoformat(), rows[1].end_date.isoformat()),
+                          ("2022-11-01", "2023-02-01"))
+        self.assertTrue(all(row.result for row in rows))
+
+    def test_rerunning_reuses_existing_cache_rows(self):
+        call_command(
+            "precompute_forecasts",
+            "--start", "2022-08-01",
+            "--segments", "1",
+            stdout=io.StringIO(), stderr=io.StringIO(),
+        )
+        self.assertEqual(ForecastResult.objects.count(), 1)
+        call_command(
+            "precompute_forecasts",
+            "--start", "2022-08-01",
+            "--segments", "1",
+            stdout=io.StringIO(), stderr=io.StringIO(),
+        )
+        self.assertEqual(ForecastResult.objects.count(), 1)
+
+
+class PrecomputeForecastsBackfillTests(TestCase):
+    """The no-`--start` path is a real full backfill from the training data's
+    end through the future, which can take many minutes end-to-end - too slow
+    for a test. Mock the expensive call and just verify the date math/looping
+    produces the right segment sequence."""
+
+    @patch("tools.management.commands.precompute_forecasts.get_or_create_forecast")
+    def test_backfills_from_training_end_through_future_segments(self, mock_get_or_create):
+        mock_get_or_create.return_value = []
+        call_command("precompute_forecasts", "--segments", "1", stdout=io.StringIO(), stderr=io.StringIO())
+
+        calls = mock_get_or_create.call_args_list
+        self.assertGreater(len(calls), 1)
+
+        expected_first_start = training_data['Date'].max() + pd.Timedelta(days=1)
+        first_start = calls[0].args[0]
+        self.assertEqual(first_start, {
+            "year": expected_first_start.year,
+            "month": expected_first_start.month,
+            "day": expected_first_start.day,
+        })
+
+        last_end = calls[-1].args[1]
+        last_end_ts = pd.Timestamp(year=last_end["year"], month=last_end["month"], day=last_end["day"])
+        today_first = pd.Timestamp.today().replace(day=1)
+        self.assertGreaterEqual(last_end_ts, today_first + pd.DateOffset(months=3))
+
+        # Segments should be contiguous (no gaps, no overlaps).
+        for prev_call, curr_call in zip(calls, calls[1:]):
+            prev_end = prev_call.args[1]
+            curr_start = curr_call.args[0]
+            self.assertEqual(prev_end, curr_start)
 
 
 class ToolAccessTests(TestCase):
