@@ -6,19 +6,37 @@
 <script src="{% static 'vendor/plotly/plotly.min.js' %}"></script>
 <style>
   .chart-container {
-    min-height: 350px;
+    height: 550px;
+    min-height: 250px;
+    max-height: 85vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #f8f9fa;
     position: relative;
     max-width: 100%;
-    overflow-x: auto;
+    overflow: auto;
+    resize: vertical;
+  }
+
+  /* Small visual cue that the corner is draggable, beyond the browser's
+     default resize affordance. */
+  .chart-container::after {
+    content: '';
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #adb5bd;
+    border-bottom: 2px solid #adb5bd;
+    pointer-events: none;
   }
 
   .chart-container .js-plotly-plot,
   .chart-container .plotly-graph-div {
     width: 100% !important;
+    height: 100% !important;
     max-width: 100%;
   }
 
@@ -132,6 +150,14 @@
         <div class="dashboard-card">
             <div class="card-header"><i class="fas fa-chart-area"></i> Prediction </div>
             <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <label for="chartHeightSlider" class="form-label mb-0 text-muted small text-nowrap">
+                        <i class="fas fa-arrows-alt-v me-1"></i>Chart height
+                    </label>
+                    <input type="range" class="form-range" id="chartHeightSlider"
+                           min="300" max="900" step="10" value="550"
+                           aria-label="Adjust chart height">
+                </div>
                 <div class="chart-container text-center" id="chartContainer">
                     <!-- Loading Overlay -->
                     <div class="loading-overlay hidden" id="loadingOverlay">
@@ -143,7 +169,7 @@
                     </div>
 
                     <!-- Chart Content -->
-                    <div id="chartContent" class="w-100">
+                    <div id="chartContent" class="w-100 h-100">
                         {% if plot_html %}
                             {{ plot_html|safe }}
                         {% else %}
@@ -216,6 +242,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     window.addEventListener('load', resizePlotlyCharts);
     window.addEventListener('resize', resizePlotlyCharts);
+
+    // The chart container is manually resizable (drag its bottom-right
+    // corner) so a long historical-to-predicted trend isn't cramped into a
+    // fixed height. Native CSS `resize` doesn't fire a window `resize`
+    // event, so watch the container itself and resize Plotly to match.
+    const chartContainer = document.getElementById('chartContainer');
+    const heightSlider = document.getElementById('chartHeightSlider');
+
+    if (chartContainer && heightSlider) {
+        heightSlider.addEventListener('input', function () {
+            chartContainer.style.height = this.value + 'px';
+            resizePlotlyCharts();
+        });
+    }
+
+    if (chartContainer && window.ResizeObserver) {
+        new ResizeObserver(function () {
+            resizePlotlyCharts();
+            // Keep the slider in sync when the corner handle was dragged
+            // instead, so it always reflects the container's real height.
+            if (heightSlider) {
+                const currentHeight = Math.round(chartContainer.getBoundingClientRect().height);
+                if (String(currentHeight) !== heightSlider.value) {
+                    heightSlider.value = Math.min(Math.max(currentHeight, heightSlider.min), heightSlider.max);
+                }
+            }
+        }).observe(chartContainer);
+    }
 });
 </script>
 {% endblock extra_scripts %}

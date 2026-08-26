@@ -1,5 +1,6 @@
 import io
 import json
+import re
 from unittest.mock import patch
 
 import pandas as pd
@@ -149,6 +150,41 @@ class PrecomputeForecastsBackfillTests(TestCase):
             prev_end = prev_call.args[1]
             curr_start = curr_call.args[0]
             self.assertEqual(prev_end, curr_start)
+
+
+class LevelsContinuousPlotTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('levelsuser', 'levels@example.com', 'correct-password123')
+        self.client.force_login(self.user)
+
+    def test_plot_highlights_requested_range(self):
+        response = self.client.post(reverse('levels'), {
+            'reference_start': '2022-08-01', 'reference_end': '2022-11-01',
+        })
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn('Requested prediction', html)
+
+    def test_second_adjacent_request_reuses_first_as_context(self):
+        first = self.client.post(reverse('levels'), {
+            'reference_start': '2022-08-01', 'reference_end': '2022-11-01',
+        })
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(ForecastResult.objects.count(), 1)
+
+        second = self.client.post(reverse('levels'), {
+            'reference_start': '2022-11-01', 'reference_end': '2023-02-01',
+        })
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(ForecastResult.objects.count(), 2)
+
+        # The chart embedded in the second response should carry more data
+        # points than just its own ~3-month slice, since it pulls in the
+        # first (adjacent, already-cached) request as context.
+        match = re.search(r'"x":\[(.*?)\]', second.content.decode())
+        self.assertIsNotNone(match)
+        point_count = match.group(1).count(",") + 1
+        self.assertGreater(point_count, 93)
 
 
 class ToolAccessTests(TestCase):

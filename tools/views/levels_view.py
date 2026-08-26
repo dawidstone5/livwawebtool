@@ -6,39 +6,147 @@ from django.contrib import messages
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
-from tools.views.api_code import get_or_create_forecast, training_data
+from tools.views.api_code import get_or_create_forecast, training_data, model_version
+from tools.models import ForecastResult
 
 logger = logging.getLogger(__name__)
 
+# How many days of real historical actuals (ending where the training data
+# does) to always show on the chart, regardless of how far in the future the
+# requested prediction is. Without this, a request far past the training
+# data's end - which is the common case, since the model isn't retrained
+# continuously - would never pull in any real historical data for context.
+HISTORICAL_LOOKBACK_DAYS = 730
+
+
+def _insert_gap_breaks(df, gap_days=2):
+    """
+    Insert a null-value row wherever consecutive dates skip more than
+    gap_days, so Plotly draws a visible break instead of a misleading
+    straight line across a period nobody has predicted yet.
+    """
+    if df.empty:
+        return df
+    records = df.to_dict('records')
+    out = [records[0]]
+    for prev, curr in zip(records, records[1:]):
+        if (curr['Date'] - prev['Date']).days > gap_days:
+            out.append({'Date': prev['Date'] + (curr['Date'] - prev['Date']) / 2, 'Lake_Level': None})
+        out.append(curr)
+    return pd.DataFrame(out)
+
+
+def _load_context_series():
+    """
+    Build a Date/Lake_Level/source series spanning the last
+    HISTORICAL_LOOKBACK_DAYS of real historical actuals plus every
+    already-cached forecast (of any date range), tagged by source so the
+    chart can render measured data and predicted data as visually distinct
+    lines instead of one undifferentiated trend.
+    """
+    frames = []
+
+    if training_data is not None:
+        max_date_train = training_data['Date'].max()
+        lookback_start = max_date_train - pd.Timedelta(days=HISTORICAL_LOOKBACK_DAYS)
+        historical = training_data[
+            (training_data['Date'] >= lookback_start) & (training_data['Date'] <= max_date_train)
+        ][['Date', 'Lake_Level']].copy()
+        if not historical.empty:
+            historical['source'] = 'historical'
+            frames.append(historical)
+
+    cached_rows = ForecastResult.objects.filter(
+        model_version=model_version,
+    ).values_list('result', flat=True)
+    for records in cached_rows:
+        rows = [
+            {'Date': r['Date'], 'Lake_Level': r['Lake_Level']}
+            for r in records if 'Date' in r and 'Lake_Level' in r
+        ]
+        if rows:
+            predicted = pd.DataFrame(rows)
+            predicted['source'] = 'predicted'
+            frames.append(predicted)
+
+    if not frames:
+        return pd.DataFrame(columns=['Date', 'Lake_Level', 'source'])
+
+    combined = pd.concat(frames, ignore_index=True)
+    combined['Date'] = pd.to_datetime(combined['Date'])
+    # A date covered by both a historical actual and a cached prediction
+    # (shouldn't normally happen - predictions only start after the training
+    # data ends) keeps the historical value.
+    combined['_priority'] = combined['source'].map({'historical': 0, 'predicted': 1})
+    combined = combined.sort_values(['Date', '_priority']).drop_duplicates(subset='Date', keep='first')
+    return combined.drop(columns='_priority').sort_values('Date').reset_index(drop=True)
+
+
+def _clean_levels(series):
+    """Unwrap the occasional length-1 list/array a cached JSON value can come
+    back as, so Plotly gets plain floats."""
+    return series.apply(lambda x: x[0] if isinstance(x, (list, np.ndarray)) and len(x) > 0 else x)
+
 
 # function for plotting the results
-def generate_plot(results_df, selected_variable):
+def generate_plot(context_df, highlight_start=None, highlight_end=None):
     """
-    Generate an interactive Plotly chart (as an embeddable HTML fragment) from
-    the results dataframe. Zoom (scroll/box-select) and pan are Plotly defaults.
+    Generate an interactive Plotly chart (as an embeddable HTML fragment)
+    from the tagged context series (Date/Lake_Level/source). Real historical
+    (measured) data and model-predicted data are drawn as two distinctly
+    colored lines - red for measured, green for predicted - so it's clear
+    which points are actual readings versus a forecast. highlight_start/
+    highlight_end, if given, shade the exact range the user requested in a
+    lighter background so it stands out against the surrounding trend.
     """
     try:
-        # Ensure the variable data is in the correct format
-        results_df[selected_variable] = results_df[selected_variable].apply(
-            lambda x: x[0] if isinstance(x, (list, np.ndarray)) and len(x) > 0 else x
-        )
-
         fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=results_df.index,
-            y=results_df[selected_variable],
-            mode='lines',
-            name='Water Levels',
-            line=dict(color='#1abc9c', width=2),
-        ))
+
+        historical = context_df[context_df['source'] == 'historical'][['Date', 'Lake_Level']].sort_values('Date')
+        predicted = context_df[context_df['source'] == 'predicted'][['Date', 'Lake_Level']].sort_values('Date')
+
+        if not historical.empty:
+            historical = _insert_gap_breaks(historical.reset_index(drop=True))
+            fig.add_trace(go.Scatter(
+                x=historical['Date'], y=_clean_levels(historical['Lake_Level']),
+                mode='lines', name='Historical (measured)',
+                line=dict(color='#e74c3c', width=2),
+                connectgaps=False,
+            ))
+
+        if not predicted.empty:
+            predicted = _insert_gap_breaks(predicted.reset_index(drop=True))
+            fig.add_trace(go.Scatter(
+                x=predicted['Date'], y=_clean_levels(predicted['Lake_Level']),
+                mode='lines', name='Predicted',
+                line=dict(color='#1abc9c', width=2),
+                connectgaps=False,
+            ))
+
+        if highlight_start is not None and highlight_end is not None:
+            fig.add_vrect(
+                x0=highlight_start, x1=highlight_end,
+                fillcolor='rgba(26, 188, 156, 0.12)',
+                line_width=0,
+                layer='below',
+                annotation_text='Requested prediction',
+                annotation_position='top left',
+            )
+
         fig.update_layout(
-            title='Predicted Water Levels over Time',
+            title='Water Levels: Trend & Requested Prediction',
             xaxis_title='Date',
             yaxis_title='Water Level (m)',
             template='plotly_white',
             hovermode='x unified',
             margin=dict(l=50, r=30, t=60, b=50),
-            height=450,
+            height=550,
+            # Click-drag pans (translates the visible window) instead of the
+            # Plotly default box-zoom, which rescales both axes at once and
+            # can look like the axis labels "jump". Panning keeps the x-axis
+            # and y-axis anchored at the plot's edges the same way, however
+            # far you drag through the historical-to-predicted trend.
+            dragmode='pan',
         )
 
         return fig.to_html(
@@ -135,8 +243,25 @@ def levels(request):
                 context['error_message'] = "No water level data in forecast results."
                 return render(request, "tools/water_levels.html", context)
 
-            # Generate plot
-            plot_html = generate_plot(df, 'water_levels')
+            # Build a continuous context series (recent history plus every
+            # nearby already-cached forecast) so the chart shows an ongoing
+            # trend, not just the isolated slice that was requested.
+            context_df = _load_context_series()
+            if context_df.empty:
+                # Fall back to just the requested slice, tagged by whether
+                # each date falls within the training data (historical) or
+                # beyond it (predicted).
+                max_date_train = training_data['Date'].max() if training_data is not None else pd.Timestamp.min
+                context_df = df.reset_index().rename(columns={'water_levels': 'Lake_Level'})
+                context_df['source'] = context_df['Date'].apply(
+                    lambda d: 'historical' if d <= max_date_train else 'predicted'
+                )
+
+            # Generate plot, shading the exact requested range for contrast
+            plot_html = generate_plot(
+                context_df,
+                highlight_start=start_date, highlight_end=end_date,
+            )
 
             if plot_html:
                 context.update({
