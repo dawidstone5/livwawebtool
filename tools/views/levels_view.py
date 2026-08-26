@@ -6,7 +6,7 @@ from django.contrib import messages
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
-from tools.views.api_code import forecast, training_data
+from tools.views.api_code import get_or_create_forecast, training_data
 
 logger = logging.getLogger(__name__)
 
@@ -106,8 +106,8 @@ def levels(request):
                 "day": end_date.day
             }
 
-            # Generate forecast
-            results = forecast(start, end, training_data)
+            # Generate forecast (reuses a cached prediction for the same date range)
+            results = get_or_create_forecast(start, end, training_data)
             
             # Validate forecast results
             if not results or len(results) == 0:

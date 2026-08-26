@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+from tools.models import ForecastResult
+
 
 class HealthCheckTests(TestCase):
     def test_health_check_returns_healthy(self):
@@ -47,6 +49,34 @@ class ForecastApiTests(TestCase):
             content_type='application/json',
         )
         self.assertNotEqual(response.status_code, 500)
+
+
+class ForecastCacheTests(TestCase):
+    payload = {
+        'start_year': 2020, 'start_month': 1, 'start_day': 1,
+        'end_year': 2020, 'end_month': 2, 'end_day': 1,
+    }
+
+    def test_repeat_request_reuses_cached_row(self):
+        self.assertEqual(ForecastResult.objects.count(), 0)
+
+        first = self.client.post(
+            reverse('forecast-lake-levels'),
+            data=json.dumps(self.payload),
+            content_type='application/json',
+        )
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(ForecastResult.objects.count(), 1)
+
+        second = self.client.post(
+            reverse('forecast-lake-levels'),
+            data=json.dumps(self.payload),
+            content_type='application/json',
+        )
+        self.assertEqual(second.status_code, 200)
+        # Same request served from the cache: no second row, identical payload.
+        self.assertEqual(ForecastResult.objects.count(), 1)
+        self.assertEqual(first.json(), second.json())
 
 
 class ToolAccessTests(TestCase):

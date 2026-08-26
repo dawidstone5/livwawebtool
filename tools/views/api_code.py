@@ -1,10 +1,15 @@
 import logging
+import os
+from datetime import date
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, serializers
+from django.db import IntegrityError
 import pickle
 import numpy as np
 import pandas as pd
+
+from tools.models import ForecastResult
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +27,8 @@ class ForecastRequestSerializer(serializers.Serializer):
 model_path = "models/output.pkl"
 with open(model_path, 'rb') as f:
     model_output = pickle.load(f)
+# Cache key component: bumps automatically if the model artifact is replaced/retrained
+model_version = str(int(os.path.getmtime(model_path)))
 
 excel_path = "data/water_levels_data.xlsx"
 try:
@@ -144,6 +151,49 @@ def forecast(start, end, training_data, horizon=120):
         results.extend(sample.to_dict(orient="records"))
         return results
 
+def _json_safe(value):
+    """Coerce a single pandas/numpy value into something JSONField can store."""
+    if isinstance(value, pd.Timestamp):
+        return value.strftime("%Y-%m-%d")
+    if isinstance(value, (np.ndarray, list, tuple)):
+        return [_json_safe(v) for v in value]
+    if hasattr(value, "item"):
+        return value.item()
+    return value
+
+
+def _serialize_results(results):
+    return [{k: _json_safe(v) for k, v in row.items()} for row in results]
+
+
+def get_or_create_forecast(start, end, training_data, horizon=120):
+    """Return forecast() results, reusing a cached prediction for the same
+    (start, end, horizon, model_version) instead of recomputing it."""
+    start_date = date(start['year'], start['month'], start['day'])
+    end_date = date(end['year'], end['month'], end['day'])
+
+    cached = ForecastResult.objects.filter(
+        start_date=start_date, end_date=end_date, horizon=horizon, model_version=model_version,
+    ).first()
+    if cached is not None:
+        return cached.result
+
+    results = forecast(start, end, training_data, horizon=horizon)
+    serialized = _serialize_results(results)
+    try:
+        obj, _created = ForecastResult.objects.get_or_create(
+            start_date=start_date, end_date=end_date, horizon=horizon, model_version=model_version,
+            defaults={"result": serialized},
+        )
+        return obj.result
+    except IntegrityError:
+        # Lost a race with a concurrent request computing the same forecast.
+        cached = ForecastResult.objects.filter(
+            start_date=start_date, end_date=end_date, horizon=horizon, model_version=model_version,
+        ).first()
+        return cached.result if cached is not None else serialized
+
+
 class ForecastLakeLevelsView(APIView):
     def post(self, request):
         serializer = ForecastRequestSerializer(data=request.data)
@@ -166,14 +216,9 @@ class ForecastLakeLevelsView(APIView):
             "day": validated_data['end_day']
         }
         try:
-            results = forecast(start, end, training_data)
+            results = get_or_create_forecast(start, end, training_data)
             if results is None:
                 return Response({"error": "No forecast results returned."}, status=status.HTTP_404_NOT_FOUND)
-            # Convert numpy types to native Python types for JSON serialization
-            for r in results:
-                r["Date"] = r["Date"].strftime("%Y-%m-%d") if hasattr(r["Date"], "strftime") else str(r["Date"])
-                if "Lake_Level" in r and hasattr(r["Lake_Level"], "item"):
-                    r["Lake_Level"] = r["Lake_Level"].item()
             return Response({"forecast": results}, status=status.HTTP_200_OK)
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
